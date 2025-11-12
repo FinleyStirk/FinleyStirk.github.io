@@ -1,3 +1,8 @@
+---
+layout: default
+title: Prompt Injections
+---
+
 Why is ChatGPT giving me a phishing link?
 
 Inspired by the CamHack 2026 theme of "Unexpected Behaviour", I wanted to do some research into the security vulnerabilities of the new OpenAI atlas browser. To say I was surprised at how easy it was to exploit would be an understatement. With just a few well placed sentances you can trick the browser into endorcing certain products, spreading a political agenda, speaking like a pirate or even promoting phishing links.
