@@ -1,0 +1,256 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header Navigation */
+.site-header {
+  background: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  padding: 15px 0;
+}
+
+.nav-bar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+}
+
+.nav-bar a:hover {
+  text-decoration: underline;
+}
+
+/* About Section */
+.about-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  gap: 50px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.about-image {
+  flex: 0 0 200px;
+}
+
+.about-image img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #333;
+}
+
+@media (max-width: 700px) {
+  .about-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about-image {
+    margin-top: 20px;
+  }
+
+  .nav-bar ul {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+.project-card {
+  display: block;        
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 400px;
+  text-decoration: none;         
+  color: inherit;                 
+  transition: transform 0.1s ease,
+              box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.project-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 15px;
+  display: block;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.projects-title {
+  text-align: left;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  max-width: 900px;      
+  margin: 40px auto 20px auto;  
+}
+
+/* --- Weeknotes Page Styles --- */
+
+.weeknotes-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.weeknotes-container h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  letter-spacing: 0.5px;
+}
+
+.weeknote-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+}
+
+.weeknote-link {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 15px 10px;
+  text-decoration: none;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  transition: all 0.2s ease;
+}
+
+.wn-date {
+  font-family: 'Courier New', Courier, monospace; 
+  font-size: 14px;
+  color: #666;
+  min-width: 120px; 
+}
+
+
+.wn-title {
+  font-size: 18px;
+  font-weight: 500;
+  flex: 1; 
+}
+
+/* Hover Effects */
+.weeknote-link:hover {
+  background-color: #fafafa;
+  padding-left: 20px; 
+  border-bottom-color: #ccc;
+}
+
+.weeknote-link:hover .wn-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .weeknote-link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .wn-date {
+    font-size: 12px;
+  }
+}
+
+/* --- Weeknotes --- */
+
+.post-container {
+  max-width: 700px; 
+  margin: 40px auto;
+  padding: 0 20px 60px 20px;
+}
+
+.post-header {
+  margin-bottom: 40px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.post-header h1 {
+  font-size: 36px;
+  margin: 0 0 10px 0;
+}
+
+.back-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.post-content p {
+  font-size: 18px;
+  line-height: 1.8; 
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.post-content a {
+  color: #0066cc;
+  text-decoration: none;
+  border-bottom: 1px solid #0066cc;
+}
+
+.post-content a:hover {
+  background-color: #e6f0ff;
+}
+
+.post-image {
+  margin: 30px 0 40px 0; 
+  text-align: center;
+}
+
+.post-image img {
+  max-width: 100%; 
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+}
