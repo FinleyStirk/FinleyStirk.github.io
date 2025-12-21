@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>String art</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/automate_logo.png">
+</head>
+<body>
+
+<header class="site-header">
+    <nav class="nav-bar">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/weeknotes/">Weeknotes</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://github.com/FinleyStirk" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/finley-stirk/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
+        </ul>
+    </nav> 
+</header>
+
+<div class="post-container">
+        
+        <div class="post-header">
+            <h1>String Art</h1>
+            <div class="post-date">
+                <a href="https://github.com/FinleyStirk/String-Art" class="code-link" target="_blank" rel="noopener noreferrer">
+                    Source code here on github
+                </a>
+            </div>
+        </div>
+
+        <div class="post-content">
+
+    
+
+  <div class="post-image">
+        <img 
+          src="/static/images/projects/string_art/string-animation.gif" 
+          alt="String art animation"
+        />
+    </div>
+
+  <p>
+    The goal of this project was to create an algorithm which could convert any image into a unique piece of string art. If you are not already familliar, string art is a way of constructing an image using only a single piece of string wrapped around nails on a flat surface. The version I'm interested in creating is a style of string art developed by the artist 
+    <a href="https://www.saatchiart.com/vrellis" target="_blank" rel="noopener noreferrer">
+    Petros Vrellis
+    </a>
+    , this particular form of string art is where the nails are equally placed around the perimeter of a circle, which makes the task much more challenging. As a human, the task seems impossible, every line you put down will effect the entire image so you cannot just focus on one area without making changes everywhere else. This form of art being nearly exclusive to computers is what makes the idea of constructing an algorithm so appealing to me.
+  </p>
+
+  <p>
+    To begin with, I need a way of quantifying how close adding a line will bring the artwork to the target image. I started out using 
+    <a href="https://en.wikipedia.org/wiki/Bresenham's_line_algorithm" target="_blank" rel="noopener noreferrer">
+      Bresenham's algorithm
+    </a>
+    to translate the idea of a continuous line into the discrete change it has on each pixel. This is somewhat succesful, however the problem comes from the lack of flexability and the binary classification that is imposed by the algorithm. The way to circumvent these issues is to change from using brasenham's to just computing the distance for every pixel on the screen to the line. This allows me to weight pixels by their distance to the line which will give a better approximation of what a line will look like at when viewed as a whole.
+  </p>
+
+  <p>
+    With a representation of the line's effect on the image, I can now construct an algorithm to optimise the difference between the heuristic and the target image. As I mentioned earlier, every line will effect many parts of the image so to truly get the optimal solution would require a brute force solution testing every possible combination of strings which would be exponential in the number of pegs making this approach entirely intractable. Therefore I'm making use of a greedy algorithm which works by choosing the line which brings the approximation as close as possible to the real image. Below is one of the first images I generated.
+  </p>
+
+    <div class="post-image">
+        <img 
+          src="/static/images/projects/string_art/eye.PNG" 
+          alt="Eye string art"
+        />
+    </div>
+
+  <p>
+
+This solution provides a good base, however what really made this project interesting was the extent to which I had to get creative with optimisations. The first step was to minimise the depth of the loops and start vectorising the calculations. This immediatly led to a massive increase in performance and allowed me to start creating images using more than 256 pegs without my laptop nearly over heating. The next small optimisation I made was to change my search for the top line each iteration to the top k lines. This was essentially a way of making the algorithm even more "greedy" and allowed me to experiment to see how varying k improved performance at the cost of speed. The final optimisation was to create a lookup between pixels and lines to allow for caching of scores for lines which are uneffected between iterations. With these optimisations I can now generate satisfying looking string art and this is where I will leave this project for nows.
+  </p>
+
+  <div class="post-image">
+    <img
+      src="/static/images/projects/string_art/audrey.png"
+      alt="Audrey Hepburn string art"
+    />
+  </div>
+
+</div>
+</body>
+</html>
