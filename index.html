@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finley Stirk</title>
   <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/static/images/automate_logo.png">
 </head>
 <body>
@@ -13,7 +16,6 @@
       <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/weeknotes">Weeknotes</a></li>
-        <li><a href="/blog">Blog</a></li>
         <li><a href="https://github.com/FinleyStirk" target="_blank" rel="noopener noreferrer">GitHub</a></li>
         <li><a href="https://www.linkedin.com/in/finley-stirk/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
       </ul>
@@ -22,56 +24,71 @@
 
   <section class="about-section">
     <div class="about-text">
-      <h1>About</h1>
+      <h1><span class="text-panel">About</span></h1>
       <p>
         Second year undergraduate at the University of Cambridge studying Computer Science with a particular 
         interest in functional programming languages and environmental computing. You can find out more from 
-        <a href="static/documents/finley-stirk-cv.pdf" target="_blank">my cv</a>
+        <a href="/static/documents/finley-stirk-cv.pdf" target="_blank">my cv</a>
       </p>
     </div>
     <div class="about-image">
-      <img src="static/images/profile_picture.png" alt="Picture of Me" />
+      <img src="/static/images/profile_picture.png" alt="Picture of Me" />
     </div>
   </section>
 
-  <h2 class="projects-title">Recent Projects</h2>
+  <h2 class="projects-title"><span class="text-panel">Recent Projects</span></h2>
   <div class="project-grid">
     <a href="https://www.theengineer.co.uk/content/in-depth/c2i-2023-young-innovator-winner-automate" class="project-card">
-      <h3>Automate</h3>
-      <img src="static/images/projects/automate.png" alt="Automate image">
-      <p>A robot designed to help people with motor disabilities play over the board chess using accessible inputs like eye gaze tracking and voice controls.</p>
+      <img src="/static/images/projects/chess_robot/wire_frame.png" alt="Automate image" class="project-card-img-contain">
+      <div class="project-card-text">
+        <h3>Automate</h3>
+        <p>A robot designed to help people with motor disabilities play over the board chess using accessible inputs like eye gaze tracking and voice controls</p>
+      </div>
     </a>
 
-    <a href="weeknotes/05-09-25.html" class="project-card">
-      <h3>Topogmesh</h3>
-      <img src="static/images/projects/mount_rinjani.png" alt="Topogmesh image">
-      <p>An open source data visualisation tool which uses satelite and OpenStreetMap data to create 3D printable models of cities and terrain</p>
+    <a href="/weeknotes/05-09-25.html" class="project-card">
+      <img src="/static/images/projects/mount_rinjani.png" alt="Topogmesh image">
+      <div class="project-card-text">
+        <h3>Topogmesh</h3>
+        <p>An open source data visualisation tool which uses satelite and OpenStreetMap data to create 3D printable models of cities and terrain</p>
+      </div>
     </a>
 
     <a href="/projects/string-art.html" class="project-card">
-      <h3>String Art</h3>
-      <img src="static/images/projects/string_art/audrey.png" alt="string art image">
-      <p>String art is an art technique where you construct an image using only straight lines wrapped around nails on a circular board. In this project I created an algorithm to convert arbitrary images into string art.</p>
+      <img src="/static/images/projects/string_art/audrey.png" alt="string art image">
+      <div class="project-card-text">
+        <h3>String Art</h3>
+        <p>String art is an art technique where you construct an image using only straight lines wrapped around nails on a circular board. In this project I created an algorithm to convert arbitrary images into string art</p>
+      </div>
     </a>
 
     <a href="https://devpost.com/software/auto-camcrib" class="project-card">
-      <h3>Autocamcribs</h3>
-      <img src="static/images/projects/autocamcribs.jpeg" alt="Autocamcribs image">
-      <p>An AI study assistant which procedurally animates mathmatical explanation videos tailered to the users homework questions</p>
+      <img src="/static/images/projects/autocamcribs.jpeg" alt="Autocamcribs image">
+      <div class="project-card-text">
+        <h3>Autocamcribs</h3>
+        <p>An AI study assistant which procedurally animates mathmatical explanation videos tailered to the users homework questions</p>
+      </div>
     </a>
 
-    <a href="projects/3D-maze-generation.html" class="project-card">
-      <h3>3D Maze Generation</h3>
-      <img src="static/images/projects/maze_generation/spherical_maze.png" alt="charvis image">
-      <p>A project where I procedurally generate meshes for various types of three dimensional mazes</p>
+    <a href="/projects/3D-maze-generation.html" class="project-card">
+      <img src="/static/images/projects/maze_generation/spherical_maze.png" alt="charvis image">
+      <div class="project-card-text">
+        <h3>3D Maze Generation</h3>
+        <p>A project where I procedurally generate meshes for various types of three dimensional mazes</p>
+      </div>
     </a>
 
+    <!-- Charvis — temporarily removed, keep for possible reinstatement
     <a href="https://devpost.com/software/charvis" class="project-card">
-      <h3>Charvis</h3>
-      <img src="static/images/projects/charvis.jpeg" alt="charvis image">
-      <p>An AR pair of glasses which uses computer vision and machine learning to draw arrows showing the best move in a game of chess</p>
+      <img src="/static/images/projects/charvis.jpeg" alt="charvis image">
+      <div class="project-card-text">
+        <h3>Charvis</h3>
+        <p>An AR pair of glasses which uses computer vision and machine learning to draw arrows showing the best move in a game of chess</p>
+      </div>
     </a>
+    -->
   </div>
+  <script src="/static/js/cursor-glow.js" defer></script>
 </body>
 </html>
  

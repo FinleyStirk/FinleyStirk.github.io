@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>String art</title>
     <link rel="stylesheet" href="/static/css/style.css" />
-    <link rel="icon" type="image/png" href="/static/images/automate_logo.png">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/images/automate_logo.png">
 </head>
 <body>
 
@@ -13,8 +16,7 @@
     <nav class="nav-bar">
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/weeknotes/">Weeknotes</a></li>
-            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/weeknotes">Weeknotes</a></li>
             <li><a href="https://github.com/FinleyStirk" target="_blank" rel="noopener noreferrer">GitHub</a></li>
             <li><a href="https://www.linkedin.com/in/finley-stirk/" target="_blank" rel="noopener noreferrer">Linkedin</a></li>
         </ul>
@@ -72,7 +74,7 @@
 
   <p>
 
-This solution provides a good base, however what really made this project interesting was the extent to which I had to get creative with optimisations. The first step was to minimise the depth of the loops and start vectorising the calculations. This immediatly led to a massive increase in performance and allowed me to start creating images using more than 256 pegs without my laptop nearly over heating. The next small optimisation I made was to change my search for the top line each iteration to the top k lines. This was essentially a way of making the algorithm even more "greedy" and allowed me to experiment to see how varying k improved performance at the cost of speed. The final optimisation was to create a lookup between pixels and lines to allow for caching of scores for lines which are uneffected between iterations. With these optimisations I can now generate satisfying looking string art and this is where I will leave this project for nows.
+This solution provides a good base, however what really made this project interesting was the extent to which I had to get creative with optimisations. The first step was to minimise the depth of the loops and start vectorising the calculations. This immediatly led to a massive increase in performance and allowed me to start creating images using more than 256 pegs without my laptop nearly over heating. The next small optimisation I made was to change my search for the top line each iteration to the top k lines. This was essentially a way of making the algorithm even more "greedy" and allowed me to experiment to see how varying k improved speed at the cost of accuracy. The final optimisation was to create a lookup between pixels and lines to allow for caching of scores for lines which are uneffected between iterations. With these optimisations I can now generate satisfying looking string art and this is where I will leave this project for now.
   </p>
 
   <div class="post-image">
@@ -83,5 +85,6 @@ This solution provides a good base, however what really made this project intere
   </div>
 
 </div>
+  <script src="/static/js/cursor-glow.js" defer></script>
 </body>
 </html>

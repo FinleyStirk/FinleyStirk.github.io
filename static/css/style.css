@@ -1,13 +1,70 @@
+:root {
+  --bg: #0a192f;
+  --bg-alt: #112240;
+  --text: #aab6cc;
+  --text-muted: #76839c;
+  --border: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.3);
+  --accent: #7fb2ff;
+  --accent-bg: rgba(127, 178, 255, 0.15);
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --grid-minor: rgba(255, 255, 255, 0.013);
+  --grid-major: rgba(255, 255, 255, 0.028);
+  --bg-pattern:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.025)' stroke-width='1' stroke-linecap='square'%3E%3Cpath d='M20 0 V60 L40 80 H120'/%3E%3Cpath d='M180 240 V180 L160 160 H80 L60 140 V100'/%3E%3Cpath d='M240 60 H200 L180 40 V0'/%3E%3Cpath d='M0 160 H40 L60 180 V240'/%3E%3Cpath d='M120 0 V30 L140 50 H240'/%3E%3Cpath d='M0 200 H60 L80 220 V240'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.035)'%3E%3Ccircle cx='120' cy='80' r='2'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='180' cy='40' r='2'/%3E%3Ccircle cx='140' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  --bg-pattern-size: 240px 240px, 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+  --bg-pattern-glow:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.17)' stroke-width='1' stroke-linecap='square'%3E%3Cpath d='M20 0 V60 L40 80 H120'/%3E%3Cpath d='M180 240 V180 L160 160 H80 L60 140 V100'/%3E%3Cpath d='M240 60 H200 L180 40 V0'/%3E%3Cpath d='M0 160 H40 L60 180 V240'/%3E%3Cpath d='M120 0 V30 L140 50 H240'/%3E%3Cpath d='M0 200 H60 L80 220 V240'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.27)'%3E%3Ccircle cx='120' cy='80' r='2'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='180' cy='40' r='2'/%3E%3Ccircle cx='140' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.17) 1px, transparent 1px);
+}
+
 body {
-  font-family: Arial, sans-serif;
+  position: relative;
+  z-index: 0;
+  font-family: 'Space Grotesk', Arial, sans-serif;
   margin: 0;
   padding: 0;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+}
+
+/* Cursor-follow glow: redraws the same line pattern, screen-blended and
+   masked to a soft circle at the pointer, so only the lines under the
+   cursor brighten. Sits behind all page content. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--bg-pattern-glow);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(circle 500px at var(--mx, -9999px) var(--my, -9999px), #000 0%, transparent 70%);
+  mask-image: radial-gradient(circle 500px at var(--mx, -9999px) var(--my, -9999px), #000 0%, transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    display: none;
+  }
 }
 
 /* Header Navigation */
 .site-header {
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
   padding: 15px 0;
 }
 
@@ -23,7 +80,7 @@ body {
 .nav-bar a {
   text-decoration: none;
   font-size: 16px;
-  color: #333;
+  color: var(--text);
   font-weight: bold;
 }
 
@@ -49,6 +106,7 @@ body {
 .about-text p {
   font-size: 18px;
   line-height: 1.6;
+  color: var(--text);
 }
 
 .about-image {
@@ -60,7 +118,7 @@ body {
   height: 200px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #333;
+  border: 2px solid var(--border-strong);
 }
 
 @media (max-width: 700px) {
@@ -80,45 +138,97 @@ body {
 }
 
 .project-card {
-  display: block;        
-  border: 1px solid #ccc;
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  gap: 30px;
   border-radius: 20px;
-  padding: 10px 20px 20px 20px;
-  max-width: 400px;
-  text-decoration: none;         
-  color: inherit;                 
-  transition: transform 0.1s ease,
-              box-shadow 0.2s ease;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+  transition: background 0.2s ease,
+              border-color 0.2s ease,
+              backdrop-filter 0.2s ease;
 }
 
+/* Liquid-glass hover instead of a lifted drop-shadow, so it reads as the
+   card's surface changing rather than the card physically moving: a
+   translucent tint plus backdrop-filter blur/saturate frosts whatever
+   pattern is behind it (including this card's own ::before panel). */
 .project-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+/* Cards have no opaque background of their own, so the whole card — image
+   gap and text alike — is a glow-blocking dimming zone, same ::before
+   pattern-panel trick used for body copy (see further down for the full
+   explanation): an opaque copy of the pattern behind the real content,
+   masked to fade smoothly at the edges instead of a hard cutoff. */
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+  mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
 }
 
 .project-card img {
-  width: 100%;
-  max-height: 200px;
-  object-fit: contain;
+  flex: 0 0 220px;
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
   border-radius: 15px;
-  
-  display: block; 
-  margin: 15px auto 0; 
 }
 
-.project-card h3 {
-  font-size: 24px;   
-  font-weight: 700; 
-  margin: 10px 0 5px 0; 
+/* Wireframe render has a transparent background, so scale-to-fit rather
+   than crop-to-fill — cropping would just cut into empty space anyway,
+   and shrinking it down lets the whole diagram show. */
+.project-card-img-contain {
+  object-fit: contain !important;
+}
+
+.project-card-text h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--text);
+}
+
+.project-card-text p {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 40px;
+  grid-template-columns: 1fr;
+  gap: 30px;
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
+}
+
+@media (max-width: 600px) {
+  .project-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .project-card img {
+    width: 100%;
+    flex-basis: auto;
+  }
 }
 
 .projects-title {
@@ -126,8 +236,9 @@ body {
   font-size: 34px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  max-width: 900px;      
-  margin: 40px auto 20px auto;  
+  max-width: 900px;
+  margin: 40px auto 20px auto;
+  color: var(--text);
 }
 
 /* --- Weeknotes Page Styles --- */
@@ -143,44 +254,45 @@ body {
   font-weight: 600;
   margin-bottom: 30px;
   letter-spacing: 0.5px;
+  color: var(--text);
 }
 
 .weeknote-list {
   display: flex;
   flex-direction: column;
-  gap: 15px; 
+  gap: 15px;
 }
 
 .weeknote-link {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
   padding: 15px 10px;
   text-decoration: none;
-  color: #333;
-  border-bottom: 1px solid #eee;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
 .wn-date {
-  font-family: 'Courier New', Courier, monospace; 
+  font-family: 'Space Mono', 'Courier New', monospace;
   font-size: 14px;
-  color: #666;
-  min-width: 120px; 
+  color: var(--text-muted);
+  min-width: 120px;
 }
 
 
 .wn-title {
   font-size: 18px;
   font-weight: 500;
-  flex: 1; 
+  flex: 1;
 }
 
 /* Hover Effects */
 .weeknote-link:hover {
-  background-color: #fafafa;
-  padding-left: 20px; 
-  border-bottom-color: #ccc;
+  background-color: var(--hover-bg);
+  padding-left: 20px;
+  border-bottom-color: var(--border-strong);
 }
 
 .weeknote-link:hover .wn-title {
@@ -195,7 +307,7 @@ body {
     align-items: flex-start;
     gap: 5px;
   }
-  
+
   .wn-date {
     font-size: 12px;
   }
@@ -204,65 +316,66 @@ body {
 /* --- Weeknotes --- */
 
 .post-container {
-  max-width: 700px; 
+  max-width: 700px;
   margin: 40px auto;
   padding: 0 20px 60px 20px;
 }
 
 .post-header {
   margin-bottom: 40px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 20px;
 }
 
 .post-header h1 {
   font-size: 36px;
   margin: 0 0 10px 0;
+  color: var(--text);
 }
 
 .back-link {
   display: inline-block;
   text-decoration: none;
-  color: #666;
+  color: var(--text-muted);
   font-size: 14px;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .back-link:hover {
-  color: #000;
+  color: var(--text);
   text-decoration: underline;
 }
 
 .post-content p {
   font-size: 18px;
-  line-height: 1.8; 
+  line-height: 1.8;
   margin-bottom: 25px;
-  color: #333;
+  color: var(--text);
 }
 
 .post-content a {
-  color: #0066cc;
+  color: var(--accent);
   text-decoration: none;
-  border-bottom: 1px solid #0066cc;
+  border-bottom: 1px solid var(--accent);
 }
 
 .post-content a:hover {
-  background-color: #e6f0ff;
+  background-color: var(--accent-bg);
 }
 
 .post-image {
   max-width: 400px;
-  margin: 30px auto 40px; 
+  margin: 30px auto 40px;
   text-align: center;
 }
 
 .post-image img {
-  max-width: 100%; 
+  max-width: 100%;
   height: auto;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border: 1px solid #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
 }
 
 /* --- Blog Page Styles --- */
@@ -278,6 +391,7 @@ body {
   font-weight: 600;
   margin-bottom: 30px;
   letter-spacing: 0.5px;
+  color: var(--text);
 }
 
 .blog-list {
@@ -288,20 +402,20 @@ body {
 
 .blog-link {
   display: flex;
-  align-items: flex-start; 
+  align-items: flex-start;
   padding: 25px 10px;
   text-decoration: none;
-  color: #333;
-  border-bottom: 1px solid #eee;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
 .blog-date {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Space Mono', 'Courier New', monospace;
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   min-width: 120px;
-  margin-top: 6px; 
+  margin-top: 6px;
 }
 
 
@@ -309,27 +423,27 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .blog-title {
-  font-size: 24px; 
+  font-size: 24px;
   font-weight: 600;
   line-height: 1.3;
 }
 
 .blog-desc {
   font-size: 16px;
-  color: #555;
+  color: var(--text-muted);
   line-height: 1.6;
   margin: 0;
 }
 
 /* Hover Effects */
 .blog-link:hover {
-  background-color: #fafafa;
+  background-color: var(--hover-bg);
   padding-left: 20px;
-  border-bottom-color: #ccc;
+  border-bottom-color: var(--border-strong);
 }
 
 .blog-link:hover .blog-title {
@@ -349,7 +463,7 @@ body {
     font-size: 12px;
     margin-top: 0;
   }
-  
+
   .blog-title {
     font-size: 20px;
   }
@@ -358,16 +472,16 @@ body {
 /* --- Blog Posts --- */
 
 .post-date {
-  color: #666;
-  font-family: 'Courier New', Courier, monospace;
+  color: var(--text-muted);
+  font-family: 'Space Mono', 'Courier New', monospace;
   margin-top: 10px;
 }
 
 .code-link {
   display: block;
-  font-family: Arial, sans-serif;
+  font-family: 'Space Grotesk', Arial, sans-serif;
   font-size: 14px;
-  color: #333;
+  color: var(--accent);
   margin-top: 10px;
   text-decoration: underline;
 }
@@ -376,19 +490,120 @@ body {
   margin-bottom: 25px;
   line-height: 1.6;
   padding-left: 20px;
+  color: var(--text);
 }
 
 .post-content li {
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 }
 
 .post-code-block {
-  background: #f4f4f4;
+  background: var(--bg-alt);
   padding: 20px;
-  border-left: 5px solid #333;
+  border-left: 5px solid var(--accent);
   overflow-x: auto;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Space Mono', 'Courier New', monospace;
   margin: 20px 0;
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
+  color: var(--text);
 }
 
+/* Repaint the same static resting pattern behind body copy, on a ::before
+   pseudo-element rather than the text element itself — mask-image affects
+   an element's ENTIRE paint, text included, so masking the paragraph
+   directly faded the letters too. A separate pseudo, positioned behind
+   the real text (same z-index: -1 trick used for the body-level glow
+   layer, scoped to this element's own stacking context), lets the mask
+   fade the pattern while the text stays untouched on top.
+
+   Because background-attachment: fixed ties the tile to the viewport, it
+   lines up seamlessly with the page-wide pattern regardless of the
+   pseudo's own position — and since it's an opaque paint rather than a
+   filter on the layers behind, the cursor glow (further back, at
+   z-index: -1 on body) can never reach through it, at any brightness.
+
+   The fade at the edges is a mask, not a box-shadow: the grid pattern is
+   so faint that even a sliver of opaque shadow already hides it
+   completely, so a shadow's blur reads as a hard cutoff no matter how
+   large. A mask instead controls how much of the pseudo is visible vs.
+   how much of the (near-identical) ambient background shows through —
+   since both are the same pattern, the fade is genuinely seamless, and a
+   radial gradient has no hard edge by construction. */
+.about-text p,
+.weeknotes-container h1,
+.blog-container h1,
+.post-header h1,
+.post-content p,
+.post-content li,
+.post-date,
+.code-link,
+.back-link,
+.text-panel,
+.weeknote-link,
+.blog-link {
+  position: relative;
+  z-index: 0;
+}
+
+.about-text p::before,
+.weeknotes-container h1::before,
+.blog-container h1::before,
+.post-header h1::before,
+.post-content p::before,
+.post-content li::before,
+.post-date::before,
+.code-link::before,
+.back-link::before {
+  content: "";
+  position: absolute;
+  inset: -9px -24px;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+  mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+}
+
+/* "About" and "Recent Projects" are short headings sitting in a much
+   wider block box, so painting the panel on the h1/h2 itself covered a
+   lot of empty space past the text. This wraps just the words in an
+   inline-block span instead, which shrinks to fit the text exactly —
+   the heading element itself keeps its original layout/centering
+   untouched, only this inner span (and its ::before) gets the panel. */
+.text-panel {
+  display: inline-block;
+}
+
+.text-panel::before {
+  content: "";
+  position: absolute;
+  inset: -6px -14px;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+  mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+}
+
+/* Already have their own generous padding to act as the buffer, so no
+   extra inset needed beyond their own box. */
+.weeknote-link::before,
+.blog-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
+  mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
+}
