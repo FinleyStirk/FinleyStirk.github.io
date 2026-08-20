@@ -3,10 +3,13 @@
   --bg-alt: #112240;
   --text: #aab6cc;
   --text-muted: #76839c;
+  --text-bright: #f2f5fa;
+  --text-h2: #d6deed;
   --border: rgba(255, 255, 255, 0.15);
   --border-strong: rgba(255, 255, 255, 0.3);
   --accent: #7fb2ff;
   --accent-bg: rgba(127, 178, 255, 0.15);
+  --turquoise: #40e0d0;
   --hover-bg: rgba(255, 255, 255, 0.05);
   --grid-minor: rgba(255, 255, 255, 0.013);
   --grid-major: rgba(255, 255, 255, 0.028);
@@ -35,7 +38,7 @@ body {
   background-color: var(--bg);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-attachment: scroll;
 }
 
 /* Cursor-follow glow: redraws the same line pattern, screen-blended and
@@ -49,7 +52,7 @@ body::after {
   pointer-events: none;
   background-image: var(--bg-pattern-glow);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-position: 0 calc(var(--scroll-y, 0px) * -1);
   mix-blend-mode: screen;
   -webkit-mask-image: radial-gradient(circle 500px at var(--mx, -9999px) var(--my, -9999px), #000 0%, transparent 70%);
   mask-image: radial-gradient(circle 500px at var(--mx, -9999px) var(--my, -9999px), #000 0%, transparent 70%);
@@ -59,33 +62,6 @@ body::after {
   body::after {
     display: none;
   }
-}
-
-/* Header Navigation */
-.site-header {
-  background: var(--bg-alt);
-  border-bottom: 1px solid var(--border);
-  padding: 15px 0;
-}
-
-.nav-bar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-
-.nav-bar a {
-  text-decoration: none;
-  font-size: 16px;
-  color: var(--text);
-  font-weight: bold;
-}
-
-.nav-bar a:hover {
-  text-decoration: underline;
 }
 
 /* About Section */
@@ -103,10 +79,20 @@ body::after {
   flex: 1;
 }
 
+.about-text h1 {
+  color: var(--text-bright);
+}
+
 .about-text p {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text);
+}
+
+/* General-purpose emphasis: brighter white rather than heavier weight —
+   use anywhere in body copy a word/phrase should stand out. */
+.highlight {
+  color: var(--text-bright);
 }
 
 .about-image {
@@ -121,6 +107,30 @@ body::after {
   border: 2px solid var(--border-strong);
 }
 
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.social-icon {
+  display: inline-flex;
+  color: var(--text);
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+.social-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+.social-icon:hover {
+  color: var(--turquoise);
+  filter: drop-shadow(0 0 4px rgba(64, 224, 208, 0.5));
+}
+
 @media (max-width: 700px) {
   .about-section {
     flex-direction: column;
@@ -129,11 +139,6 @@ body::after {
 
   .about-image {
     margin-top: 20px;
-  }
-
-  .nav-bar ul {
-    flex-direction: column;
-    gap: 15px;
   }
 }
 
@@ -178,24 +183,65 @@ body::after {
   background-color: var(--bg);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-attachment: scroll;
   mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
 }
 
 .project-card img {
-  flex: 0 0 220px;
-  width: 220px;
-  height: 220px;
+  flex: 0 0 340px;
+  width: 340px;
+  height: 240px;
   object-fit: cover;
   border-radius: 15px;
 }
 
-/* Wireframe render has a transparent background, so scale-to-fit rather
-   than crop-to-fill — cropping would just cut into empty space anyway,
-   and shrinking it down lets the whole diagram show. */
-.project-card-img-contain {
-  object-fit: contain !important;
+/* Solid, unmasked navy backdrop dedicated to the video — the card's own
+   ::before dimming panel fades to fully transparent at the corners (by
+   design, for its soft edge), so relying on it left nothing behind the
+   video there for mix-blend-mode to blend against, and the video's black
+   painted solid instead of disappearing. This wrapper guarantees a flat
+   backdrop across the video's whole box, corners included. */
+.project-card-media {
+  flex: 0 0 340px;
+  width: 340px;
+  height: 240px;
+  border-radius: 15px;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+/* contain rather than cover keeps the whole frame centred regardless of
+   what a moving camera (or a static composition) puts where — nothing
+   is ever cropped off-centre. */
+.project-card-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Topogmesh-only: the flyover leaves a lot of empty sky in frame, so
+   scale() zooms in further from the centred position for a bigger-
+   reading card; mix-blend-mode: screen makes the video's black
+   background contribute nothing to the composite, so it reads as
+   transparent against this same dark-navy backdrop without needing real
+   alpha-channel video encoding (poor/inconsistent browser support). The
+   string-art video doesn't need either — its flat grey background was
+   colour-keyed and composited onto the exact page navy with ffmpeg
+   ahead of time, baked into the file itself, so it's already a plain
+   opaque match with nothing left to blend. */
+.project-card-video--topogmesh {
+  transform: scale(1.6);
+  mix-blend-mode: screen;
+}
+
+/* Scale up to fill the box (cropping the excess) instead of shrinking to
+   fit, anchored to the top-left of the source diagram so it reads larger
+   in the card. */
+.project-card-img-zoom-tl {
+  object-fit: cover !important;
+  object-position: left top !important;
 }
 
 .project-card-text h3 {
@@ -225,7 +271,8 @@ body::after {
     text-align: center;
   }
 
-  .project-card img {
+  .project-card img,
+  .project-card-media {
     width: 100%;
     flex-basis: auto;
   }
@@ -238,7 +285,7 @@ body::after {
   letter-spacing: 0.5px;
   max-width: 900px;
   margin: 40px auto 20px auto;
-  color: var(--text);
+  color: var(--text-h2);
 }
 
 /* --- Weeknotes Page Styles --- */
@@ -254,7 +301,7 @@ body::after {
   font-weight: 600;
   margin-bottom: 30px;
   letter-spacing: 0.5px;
-  color: var(--text);
+  color: var(--text-bright);
 }
 
 .weeknote-list {
@@ -330,7 +377,7 @@ body::after {
 .post-header h1 {
   font-size: 36px;
   margin: 0 0 10px 0;
-  color: var(--text);
+  color: var(--text-bright);
 }
 
 .back-link {
@@ -391,7 +438,7 @@ body::after {
   font-weight: 600;
   margin-bottom: 30px;
   letter-spacing: 0.5px;
-  color: var(--text);
+  color: var(--text-bright);
 }
 
 .blog-list {
@@ -516,11 +563,12 @@ body::after {
    layer, scoped to this element's own stacking context), lets the mask
    fade the pattern while the text stays untouched on top.
 
-   Because background-attachment: fixed ties the tile to the viewport, it
-   lines up seamlessly with the page-wide pattern regardless of the
-   pseudo's own position — and since it's an opaque paint rather than a
-   filter on the layers behind, the cursor glow (further back, at
-   z-index: -1 on body) can never reach through it, at any brightness.
+   Pattern scrolls with the page (background-attachment: scroll) to match
+   body's own background, so alignment with the ambient grid is only
+   exact near the top of the page and can drift slightly further down —
+   and since it's an opaque paint rather than a filter on the layers
+   behind, the cursor glow (further back, at z-index: -1 on body) can
+   never reach through it, at any brightness.
 
    The fade at the edges is a mask, not a box-shadow: the grid pattern is
    so faint that even a sliver of opaque shadow already hides it
@@ -562,7 +610,7 @@ body::after {
   background-color: var(--bg);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-attachment: scroll;
   mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
 }
@@ -586,7 +634,7 @@ body::after {
   background-color: var(--bg);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-attachment: scroll;
   mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
 }
@@ -603,7 +651,7 @@ body::after {
   background-color: var(--bg);
   background-image: var(--bg-pattern);
   background-size: var(--bg-pattern-size);
-  background-attachment: fixed;
+  background-attachment: scroll;
   mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse farthest-corner at center, #000 55%, transparent 100%);
 }
