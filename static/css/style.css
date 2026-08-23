@@ -236,6 +236,13 @@ body::after {
   mix-blend-mode: screen;
 }
 
+/* Automate (fools_mate render): same black-background situation as
+   Topogmesh above, so the same mix-blend-mode: screen trick applies. The
+   frame is already well filled, so no extra scale() is needed. */
+.project-card-video--automate {
+  mix-blend-mode: screen;
+}
+
 /* Scale up to fill the box (cropping the excess) instead of shrinking to
    fit, anchored to the top-left of the source diagram so it reads larger
    in the card. */
