@@ -80,6 +80,7 @@ body::after {
 }
 
 .about-text h1 {
+  font-size: 56px;
   color: var(--text-bright);
 }
 
@@ -140,6 +141,10 @@ body::after {
   .about-image {
     margin-top: 20px;
   }
+
+  .about-text h1 {
+    font-size: 40px;
+  }
 }
 
 .project-card {
@@ -156,6 +161,13 @@ body::after {
   transition: background 0.2s ease,
               border-color 0.2s ease,
               backdrop-filter 0.2s ease;
+}
+
+/* Reserves a card-sized, invisible row in the grid — same footprint as
+   .project-card-media (240px) plus the card's own padding (20px each
+   side) — for a slot that's temporarily empty. */
+.project-card-placeholder {
+  height: 280px;
 }
 
 /* Liquid-glass hover instead of a lifted drop-shadow, so it reads as the
@@ -251,6 +263,15 @@ body::after {
   object-position: left top !important;
 }
 
+/* Stretched to the full height of the row (media box included) so the
+   tags row below can be pushed down to sit flush with the box's bottom
+   edge via margin-top: auto, rather than just trailing the paragraph. */
+.project-card-text {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
 .project-card-text h3 {
   font-size: 24px;
   font-weight: 700;
@@ -261,6 +282,64 @@ body::after {
 .project-card-text p {
   margin: 0;
   color: var(--text-muted);
+}
+
+.project-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.project-card-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: var(--bg-alt);
+  border: 1px solid rgba(64, 224, 208, 0.18);
+  color: var(--turquoise);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Award-style variant: gold instead of the default turquoise. Some award
+   tags are plain text (this class is enough on its own); one — see
+   .project-card-link-overlay below for how that coexists with the card's
+   own primary link — is itself a real link, so the hover state and the
+   position+z-index that keeps its click area above the overlay are
+   scoped to the <a> case only, rather than implying every gold tag is
+   clickable. */
+.project-card-tag--gold {
+  color: #f2c94c;
+  border-color: rgba(242, 201, 76, 0.35);
+}
+
+a.project-card-tag--gold {
+  position: relative;
+  z-index: 2;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+a.project-card-tag--gold:hover {
+  background: rgba(242, 201, 76, 0.12);
+  border-color: rgba(242, 201, 76, 0.6);
+}
+
+/* A card can only have one native <a> around it — for Automate, that link
+   goes to its press coverage, so a second, differently-targeted link (the
+   award tag above) can't just be nested inside it (invalid HTML, and
+   browsers handle nested anchors unpredictably). Instead the card itself
+   becomes a plain <div>, and this invisible overlay recreates "the whole
+   card is a link" by stretching over it; the award tag then sits in
+   normal flow on top, at a higher z-index, so it remains independently
+   clickable. */
+.project-card-link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .project-grid {

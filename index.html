@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/static/images/automate_logo.png">
+  <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
 </head>
 <body>
   <section class="about-section">
@@ -16,8 +16,7 @@
       <h1><span class="text-panel">Finley Stirk</span></h1>
       <p>
         Final year undergraduate at the <span class="highlight">University of Cambridge</span> studying Computer Science with a particular
-        interest in functional programming languages and environmental computing. You can find out more from 
-        <a href="/static/documents/finley-stirk-cv.pdf" target="_blank">my cv</a>
+        interest in functional programming languages and environmental computing.
       </p>
     </div>
     <div class="about-image">
@@ -55,10 +54,18 @@
       <div class="project-card-text">
         <h3>Topogmesh</h3>
         <p>An open source data visualisation tool which uses satelite and OpenStreetMap data to create 3D printable models of cities and terrain</p>
+        <div class="project-card-tags">
+          <span class="project-card-tag">Python</span>
+          <span class="project-card-tag">Geospatial</span>
+          <span class="project-card-tag">Meshes</span>
+          <span class="project-card-tag">GDAL</span>
+          <span class="project-card-tag">OSM</span>
+        </div>
       </div>
     </a>
 
-    <a href="https://www.theengineer.co.uk/content/in-depth/c2i-2023-young-innovator-winner-automate" class="project-card">
+    <div class="project-card">
+      <a class="project-card-link-overlay" href="https://www.theengineer.co.uk/content/in-depth/c2i-2023-young-innovator-winner-automate" aria-label="Automate"></a>
       <div class="project-card-media">
         <video
           class="project-card-video project-card-video--automate"
@@ -73,8 +80,22 @@
       <div class="project-card-text">
         <h3>Automate</h3>
         <p>A robot designed to help people with motor disabilities play over the board chess using accessible inputs like eye gaze tracking and voice controls</p>
+        <div class="project-card-tags">
+          <a
+            class="project-card-tag project-card-tag--gold"
+            href="https://awards.theengineer.co.uk/live/en/page/2023-winners"
+            target="_blank"
+            rel="noopener noreferrer"
+          >C2I Young Innovator Winner 2024</a>
+          <a
+            class="project-card-tag project-card-tag--gold"
+            href="https://www.thebigbang.org.uk/the-big-bang-competition/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >The Big Bang Competition Senior Technology Prize 2024</a>
+        </div>
       </div>
-    </a>
+    </div>
 
     <a href="/projects/string-art.html" class="project-card">
       <div class="project-card-media">
@@ -83,6 +104,7 @@
           src="/static/media/string_art/audrey_navy.mp4"
           poster="/static/media/string_art/blank_canvas_preview.png"
           muted
+          loop
           playsinline
           preload="metadata"
         ></video>
@@ -90,9 +112,15 @@
       <div class="project-card-text">
         <h3>String Art</h3>
         <p>String art is an art technique where you construct an image using only straight lines wrapped around nails on a circular board. In this project I created an algorithm to convert arbitrary images into string art</p>
+        <div class="project-card-tags">
+          <span class="project-card-tag">Python</span>
+          <span class="project-card-tag">Graphics</span>
+          <span class="project-card-tag">Optimization</span>
+        </div>
       </div>
     </a>
 
+    <!-- Autocamcribs — temporarily removed, keep for possible reinstatement
     <a href="https://devpost.com/software/auto-camcrib" class="project-card">
       <img src="/static/images/projects/autocamcribs.jpeg" alt="Autocamcribs image">
       <div class="project-card-text">
@@ -100,6 +128,12 @@
         <p>An AI study assistant which procedurally animates mathmatical explanation videos tailered to the users homework questions</p>
       </div>
     </a>
+    -->
+
+    <!-- Placeholder: keeps this row's space reserved (so String Art isn't
+         the last card and still has room to pass through the viewport's
+         centre on scroll) until something replaces it here. -->
+    <div class="project-card-placeholder"></div>
 
     <!-- Charvis — temporarily removed, keep for possible reinstatement
     <a href="https://devpost.com/software/charvis" class="project-card">
