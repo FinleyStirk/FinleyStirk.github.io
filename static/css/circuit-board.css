@@ -1,0 +1,97 @@
+/* Experimental circuit-board background for the home page: bright cyan glowing
+   traces fanning out of every element on a deep-blue board. Paired with
+   circuit-board.js + small hooks in index.html / cursor-glow.js. */
+
+:root {
+  --bg-pattern: none;
+  --bg-pattern-size: auto;
+  --bg-pattern-glow: none;
+
+  --cb-core:     rgba(86, 214, 255, 0.88);    /* normal trace, crisp core */
+  --cb-hot:      rgba(175, 238, 255, 0.98);  /* lit / highlighted trace */
+  --cb-halo:     rgba(52, 175, 255, 0.07);  /* soft glow behind a normal trace */
+  --cb-halo-hot: rgba(140, 230, 255, 0.2);  /* soft glow behind a hot trace   */
+  --cb-chip-edge: rgba(120, 185, 240, 0.3);
+}
+
+/* text-block darkening panels from style.css have nothing to hide here */
+.about-text p::before,
+.text-panel::before,
+.project-card::before {
+  display: none;
+}
+
+/* ---- board layers: base + a cursor-lit copy, both behind all content ---- */
+#circuit-board,
+#circuit-board-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: visible;
+}
+
+#circuit-board-glow {
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(circle 300px at var(--cb-mx, -9999px) var(--cb-my, -9999px),
+                       #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 78%);
+  mask-image: radial-gradient(circle 300px at var(--cb-mx, -9999px) var(--cb-my, -9999px),
+                       #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 78%);
+}
+
+#circuit-board .cb-halo path,
+#circuit-board .cb-traces path,
+#circuit-board-glow .cb-traces path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#circuit-board .cb-halo path                   { stroke: var(--cb-halo); }
+#circuit-board .cb-halo path[data-kind="hot"]  { stroke: var(--cb-halo-hot); }
+#circuit-board .cb-traces path                 { stroke: var(--cb-core); }
+#circuit-board .cb-traces path[data-kind="hot"] { stroke: var(--cb-hot); }
+
+#circuit-board .cb-vias circle                  { fill: var(--cb-core); }
+#circuit-board .cb-vias circle[data-kind="hot"] { fill: var(--cb-hot); }
+
+#circuit-board-glow .cb-traces path {
+  stroke: rgba(190, 240, 255, 0.9);
+}
+
+/* travelling light pulses (CircuitBoard.pulse) */
+#circuit-board .cb-spark {
+  fill: none;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 10px rgba(130, 220, 255, 0.6));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #circuit-board-glow { display: none; }
+}
+
+/* ---- page elements as chips ---- */
+.about-image img[data-chip] {
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--cb-chip-edge);
+}
+
+.project-card[data-chip]::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 9px;
+  width: 15px;
+  height: 15px;
+  border-left: 1px solid rgba(120, 185, 240, 0.45);
+  border-top: 1px solid rgba(120, 185, 240, 0.45);
+  border-top-left-radius: 4px;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.project-card[data-chip]:hover::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card[data-chip]::after { transition: none; }
+}

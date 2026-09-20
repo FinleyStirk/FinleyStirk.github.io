@@ -1,0 +1,38 @@
+/* Background for the home page: the generative PCB drawn by pcb-board.js. Sits behind all content;
+   the page's own faint grid pattern is switched off so it doesn't fight the traces. */
+:root {
+  --bg-pattern: none;
+  --bg-pattern-size: auto;
+  --bg-pattern-glow: none;
+}
+
+#pcb-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: visible;
+  opacity: 0.14;   /* how far the whole board sits back behind the page: lower = fainter */
+}
+
+/* The lit copy: the same board, brighter, masked (inside the SVG) to a soft halo around each text block, so
+   the text blocks look like they give off light. Static -- nothing follows the pointer. */
+#pcb-board-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: visible;
+  opacity: 0.55;   /* strength of the light the text blocks give off */
+  mix-blend-mode: screen;
+}
+
+/* Text blocks and project cards are drawn as chips on the board (pcb-board.js), so the page's own opaque
+   panels behind them -- which would hide the board -- are switched off on this page. */
+.about-text p::before,
+.text-panel::before,
+.project-card::before {
+  display: none;
+}
