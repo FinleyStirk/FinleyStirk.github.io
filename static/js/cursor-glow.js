@@ -21,8 +21,13 @@
   window.addEventListener('mousemove', (event) => {
     if (moveFrame) return;
     moveFrame = requestAnimationFrame(() => {
+      // viewport coords for the fixed body::after grid glow
       root.style.setProperty('--mx', `${event.clientX}px`);
       root.style.setProperty('--my', `${event.clientY}px`);
+      // document coords for the absolutely-positioned #circuit-board-glow
+      // layer, whose mask is relative to the top of the page, not the viewport
+      root.style.setProperty('--cb-mx', `${event.pageX}px`);
+      root.style.setProperty('--cb-my', `${event.pageY}px`);
       moveFrame = null;
     });
   });
@@ -30,6 +35,8 @@
   window.addEventListener('mouseleave', () => {
     root.style.setProperty('--mx', '-9999px');
     root.style.setProperty('--my', '-9999px');
+    root.style.setProperty('--cb-mx', '-9999px');
+    root.style.setProperty('--cb-my', '-9999px');
   });
 
   const updateScroll = () => {
