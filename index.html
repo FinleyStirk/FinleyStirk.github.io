@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finley Stirk</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=7" />
+  <link rel="stylesheet" href="/static/css/style.css?v=9" />
   <!-- old cyan-glow board: <link rel="stylesheet" href="/static/css/circuit-board.css?v=15" /> -->
-  <link rel="stylesheet" href="/static/css/pcb-board.css?v=9" />
+  <link rel="stylesheet" href="/static/css/pcb-board.css?v=15" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,17 @@
   <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
 </head>
 <body>
-  <section class="about-section">
+  <!-- Site navigation: a thin bar fixed to the top of the window. Plain <a>s (no <ul>/<li>) on purpose: the
+       PCB background treats list items as components. The three filler links go nowhere yet. -->
+  <nav class="site-nav" aria-label="Main">
+    <a href="#about" data-nav="about">About</a>
+    <a href="#projects" data-nav="projects">Projects</a>
+    <a href="#" data-filler>Experience</a>
+    <a href="#" data-filler>Writing</a>
+    <a href="#" data-filler>Contact</a>
+  </nav>
+
+  <section class="about-section" id="about">
     <div class="about-text">
       <h1><span class="text-panel">Finley Stirk</span></h1>
       <p>
@@ -39,7 +49,7 @@
     </div>
   </section>
 
-  <h2 class="projects-title"><span class="text-panel">Projects</span></h2>
+  <h2 class="projects-title" id="projects"><span class="text-panel">Projects</span></h2>
   <div class="project-grid">
     <a href="/weeknotes/05-09-25.html" class="project-card">
       <div class="project-card-media">
@@ -103,7 +113,7 @@
     <a href="/projects/string-art.html" class="project-card">
       <div class="project-card-media">
         <video
-          class="project-card-video"
+          class="project-card-video project-card-video--stringart"
           src="/static/media/string_art/audrey_navy.mp4"
           poster="/static/media/string_art/blank_canvas_preview.png"
           muted
@@ -148,10 +158,11 @@
     </a>
     -->
   </div>
-  <script src="/static/js/cursor-glow.js?v=3" defer></script>
+  <script src="/static/js/cursor-glow.js?v=4" defer></script>
+  <script src="/static/js/site-nav.js?v=1" defer></script>
   <script src="/static/js/center-video.js?v=6" defer></script>
   <!-- old cyan-glow board: <script src="/static/js/circuit-board.js?v=61" defer></script> -->
-  <script src="/static/js/pcb-board.js?v=25" defer></script>
+  <script src="/static/js/pcb-board.js?v=44" defer></script>
 
 </body>
 </html>

@@ -1,6 +1,14 @@
 /* Background for the home page: the generative PCB drawn by pcb-board.js. Sits behind all content;
    the page's own faint grid pattern is switched off so it doesn't fight the traces. */
 :root {
+  /* black-and-white scheme for this page: dark grey ground, neutral greys for text (overrides style.css) */
+  --bg: #161616;
+  --bg-alt: #202020;
+  --text: #b8b8b8;
+  --text-muted: #8c8c8c;
+  --text-bright: #f4f4f4;
+  --text-h2: #e2e2e2;
+
   --bg-pattern: none;
   --bg-pattern-size: auto;
   --bg-pattern-glow: none;
@@ -13,11 +21,11 @@
   z-index: -2;
   pointer-events: none;
   overflow: visible;
-  opacity: 0.14;   /* how far the whole board sits back behind the page: lower = fainter */
+  opacity: 0;      /* the board is invisible until the cursor's spotlight (below) finds it */
 }
 
-/* The lit copy: the same board, brighter, masked (inside the SVG) to a soft halo around each text block, so
-   the text blocks look like they give off light. Static -- nothing follows the pointer. */
+/* The lit copy (only built when some element is set to give off light): the same board, brighter, revealed
+   inside a soft halo around each lit element by a mask inside the SVG. */
 #pcb-board-glow {
   position: absolute;
   top: 0;
@@ -25,7 +33,7 @@
   z-index: -2;
   pointer-events: none;
   overflow: visible;
-  opacity: 0.55;   /* strength of the light the text blocks give off */
+  opacity: 0.55;
   mix-blend-mode: screen;
 }
 
@@ -35,4 +43,22 @@
 .text-panel::before,
 .project-card::before {
   display: none;
+}
+
+/* The String Art video has the old navy page colour baked into the file. Greyscale turns that navy into about
+   #171717 -- almost exactly this page's dark grey -- and the artwork itself is already grey and white. */
+.project-card-video--stringart {
+  filter: grayscale(1);
+}
+
+/* Pulses (PCBBoard.pulse): light travelling along the traces, drawn on a canvas covering the visible part of the
+   page (plus a margin) that only animates while a pulse is running. */
+#pcb-pulse {
+  position: absolute;   /* in the page, so it scrolls with the text; pcb-board.js sizes it and moves it to
+                           cover what is in view (top/width/height are set there) */
+  top: 0;
+  left: 0;
+  z-index: -2;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
