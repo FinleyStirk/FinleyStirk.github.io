@@ -1,10 +1,10 @@
 :root {
-  --bg: #0a192f;
-  --bg-alt: #112240;
-  --text: #aab6cc;
-  --text-muted: #76839c;
-  --text-bright: #f2f5fa;
-  --text-h2: #d6deed;
+  --bg: #161616;
+  --bg-alt: #202020;
+  --text: #b8b8b8;
+  --text-muted: #8c8c8c;
+  --text-bright: #f4f4f4;
+  --text-h2: #e2e2e2;
   --border: rgba(255, 255, 255, 0.15);
   --border-strong: rgba(255, 255, 255, 0.3);
   --accent: #5FBF77;
@@ -12,21 +12,9 @@
   --accent-glow: rgba(95, 191, 119, 0.6);
   --turquoise: #40e0d0;
   --hover-bg: rgba(255, 255, 255, 0.05);
-  --grid-minor: rgba(255, 255, 255, 0.013);
-  --grid-major: rgba(255, 255, 255, 0.028);
-  --bg-pattern:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.025)' stroke-width='1' stroke-linecap='square'%3E%3Cpath d='M20 0 V60 L40 80 H120'/%3E%3Cpath d='M180 240 V180 L160 160 H80 L60 140 V100'/%3E%3Cpath d='M240 60 H200 L180 40 V0'/%3E%3Cpath d='M0 160 H40 L60 180 V240'/%3E%3Cpath d='M120 0 V30 L140 50 H240'/%3E%3Cpath d='M0 200 H60 L80 220 V240'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.035)'%3E%3Ccircle cx='120' cy='80' r='2'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='180' cy='40' r='2'/%3E%3Ccircle cx='140' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E"),
-    linear-gradient(var(--grid-minor) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
-    linear-gradient(var(--grid-major) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
-  --bg-pattern-size: 240px 240px, 20px 20px, 20px 20px, 100px 100px, 100px 100px;
-  --bg-pattern-glow:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.17)' stroke-width='1' stroke-linecap='square'%3E%3Cpath d='M20 0 V60 L40 80 H120'/%3E%3Cpath d='M180 240 V180 L160 160 H80 L60 140 V100'/%3E%3Cpath d='M240 60 H200 L180 40 V0'/%3E%3Cpath d='M0 160 H40 L60 180 V240'/%3E%3Cpath d='M120 0 V30 L140 50 H240'/%3E%3Cpath d='M0 200 H60 L80 220 V240'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.27)'%3E%3Ccircle cx='120' cy='80' r='2'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='180' cy='40' r='2'/%3E%3Ccircle cx='140' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E"),
-    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.17) 1px, transparent 1px);
+  --bg-pattern: none;
+  --bg-pattern-size: auto;
+  --bg-pattern-glow: none;
 }
 
 body {
