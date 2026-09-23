@@ -41,10 +41,8 @@
 //                                                 from the same spot
 //                                                 rather than restarting.
 //
-// rootMargin of -45% top/bottom shrinks the observed area down to a thin
-// band across the middle ~10% of the viewport — a card only counts as
-// "intersecting" while some part of it is passing through that centre
-// strip, not just anywhere on screen.
+// (Scroll mode is driven by the background board -- see below; the middle-strip rule
+// described here is the fallback.)
 (() => {
   const cards = document.querySelectorAll('.project-card');
   if (!cards.length) return;
@@ -93,27 +91,43 @@
 
   if (!scrollCards.length) return;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
+  // Start (on) or rest (off) a card's video -- the same rules whichever thing decides it.
+  const drive = (video, on) => {
+    if (on) {
+      if (video.dataset.startTime !== undefined && video.dataset.everPlayed === undefined) {
+        video.currentTime = startTimeFor(video);
+      }
+      video.dataset.everPlayed = 'true';
+      play(video);
+    } else if (video.dataset.restTime !== undefined) {
+      goToRest(video);
+    } else {
+      video.pause();
+    }
+  };
+
+  // Normally the background board drives it: a card's video plays while the light bar (the middle of the window) is over the
+  // card, i.e. while the bar has vanished into it, and rests when the bar leaves (pcb-board.js sends 'pcb-power' on the card).
+  scrollCards.forEach((card) => {
+    const video = card.querySelector('video');
+    card.addEventListener('pcb-power', (e) => drive(video, e.detail.on));
+  });
+
+  // Fallback if the board isn't running (script failed, or reduced motion): play while the card is in the middle strip of the
+  // window, as before. rootMargin of -45% top/bottom shrinks the observed area to a thin band across the middle ~10%.
+  let fallback = null;
+  const useFallback = () => {
+    if (fallback) return;
+    fallback = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
         const video = entry.target.querySelector('video');
-        if (!video) return;
-
-        if (entry.isIntersecting) {
-          if (video.dataset.startTime !== undefined && video.dataset.everPlayed === undefined) {
-            video.currentTime = startTimeFor(video);
-          }
-          video.dataset.everPlayed = 'true';
-          play(video);
-        } else if (video.dataset.restTime !== undefined) {
-          goToRest(video);
-        } else {
-          video.pause();
-        }
-      });
-    },
-    { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
-  );
-
-  scrollCards.forEach((card) => observer.observe(card));
+        if (video) drive(video, entry.isIntersecting);
+      }),
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    );
+    scrollCards.forEach((card) => fallback.observe(card));
+  };
+  window.addEventListener('load', () => setTimeout(() => {
+    if (!window.PCBBoard || window.PCBBoard.mediaDriven === false) useFallback();
+  }, 1500));
 })();
