@@ -1232,6 +1232,12 @@
 
   const SVGNS = 'http://www.w3.org/2000/svg';
   const mm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // Touch input never fires 'wheel', so it only ever reaches the corrective 'scroll' fallback below (onLineScroll),
+  // which -- unlike the wheel path -- can't preventDefault the native scroll and instead corrects it after the fact
+  // with an instant scrollTo. On iOS/Android that scrollTo cancels whatever touch-scroll or momentum gesture is
+  // still live, so every swipe gets cut short by the page's own correction: scrolling a whole finger-width per tap
+  // instead of gliding. coarsePointer skips that correction for touch, so native scrolling is left alone entirely.
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   let svg = null, glow = null, canvas = null, ctx = null, softBufs = [], boardCv = null, tmpCv = null, maskCv = null,
       boardKey = '', geoVersion = 0, dpr = 1, canvasW = 0, regionH = 0, regionTop = 0, raf = 0, geometry = null, lastKey = '', lastSig = '';
   const pulses = new Set();
@@ -2169,6 +2175,16 @@
     if (steer(e.deltaY)) { e.preventDefault(); checkScrollSections(lineY()); ensureRegion(); if (!raf) raf = requestAnimationFrame(frame); }
   }
   function onLineScroll() {
+    // Touch: never correct the scroll position (see coarsePointer above) -- just read progress off wherever the
+    // finger/momentum already put the page, same as the "nowhere near the chain" fallback below always did.
+    if (coarsePointer) {
+      if (chainFor !== geoVersion) buildChain();
+      if (chain && chain.length) chainProgress = chainProgressForY(lineY());
+      checkScrollSections(lineY());
+      ensureRegion();
+      if (!raf) raf = requestAnimationFrame(frame);
+      return;
+    }
     if (correctingTarget != null && Math.abs(window.scrollY - correctingTarget) < 1) {
       correctingTarget = null; pwLastRawY = window.scrollY; checkScrollSections(lineY()); ensureRegion(); if (!raf) raf = requestAnimationFrame(frame); return;
     }
