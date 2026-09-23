@@ -1512,11 +1512,17 @@
     }
     const ox = 0, oy = regionTop, K = 5, KS = 3;
     let lit = false, reveal = 0;
+    // The "reveal" halo (soft glow stencils + a full renderBoard() re-render + a multi-canvas composite, all
+    // redone every frame a pulse plays) is the expensive part of a click pulse -- the actual glowing wire trace
+    // drawn straight to ctx below is comparatively cheap. Measured on a fast desktop it already spikes to 60ms+
+    // for a single frame; on typical phone hardware that reads as a stutter or freeze. Touch still gets the
+    // wire-glow animation itself, just without this extra ambient halo.
+    const revealEnabled = !coarsePointer;
     for (const p of pulses) {
       const t = now - p.start, o = p.opts;
       if (p.reveals) for (const rv of p.reveals) if (!rv.done && t >= rv.at) { rv.done = true; revealEl(rv.el); }   // the light has reached it
       if (t > p.end) { if (p.section) p.section.state = 'done'; pulses.delete(p); continue; }
-      const revealOn = o.reveal > 0;
+      const revealOn = revealEnabled && o.reveal > 0;
       // persist: full strength until the last trace has arrived, then everything fades out together
       // `front` is how far along the wires (clock distance from the origin) the light reaches. It goes OUT with the pulse's acceleration
       // and, with o.boomerang, then comes BACK: the lit region retracts along the same paths, farthest wires first, the bright front
@@ -1610,7 +1616,7 @@
       // 200 brightness bands meant up to 200 separate ctx.stroke() calls every frame, each its own state change -- finer than
       // the eye can actually tell apart once anti-aliased, and the real cost driving the remaining per-frame lag. 48 is still
       // a fine enough gradient to look continuous, at a quarter of the worst-case draw calls.
-      const NB = 48, rv = PULSE.reveal > 0, p = net.p, xs = net.x, ys = net.y, nx = net.nxt, ws = net.w, eps = FLOW.eps;
+      const NB = 48, rv = revealEnabled && PULSE.reveal > 0, p = net.p, xs = net.x, ys = net.y, nx = net.nxt, ws = net.w, eps = FLOW.eps;
       const paths = [], sp = [];
       for (let b = 0; b < NB; b++) { paths.push(null); if (rv) sp.push(new Path2D()); }
       const used = new Uint8Array(NB), sused = new Uint8Array(NB);
@@ -1660,7 +1666,7 @@
       ctx.lineCap = 'butt';   // round caps would add up at every joint under 'lighter' and bead the line
       ctx.strokeStyle = FLOW.color; ctx.lineWidth = FLOW.width * geometry.cell;
       for (let b = 0; b < NB; b++) if (used[b]) { ctx.globalAlpha = Math.min(1, ((b + 0.5) / NB) * FLOW.alpha * caScale); ctx.stroke(paths[b]); lit = true; }
-      if (PULSE.reveal > 0) for (const bf of softBufs) {
+      if (rv) for (const bf of softBufs) {
         bf.x.strokeStyle = '#fff'; bf.x.lineWidth = PULSE.revealSize * geometry.cell / 2;
         for (let b = 0; b < NB; b++) if (sused[b]) { bf.x.globalAlpha = ((b + 0.5) / NB) * 0.5; bf.x.stroke(sp[b]); }
       }
@@ -1697,10 +1703,10 @@
         const cv = shade(v);
         ctx.globalAlpha = Math.min(1, cv * 0.9 * caScale);
         ctx.strokeRect(n.x - ox, n.y - oy, n.w, n.h);
-        if (PULSE.reveal > 0) for (const bf of softBufs) { bf.x.globalAlpha = cv * 0.5; bf.x.fillStyle = '#fff'; bf.x.fillRect(n.x - ox, n.y - oy, n.w, n.h); }
+        if (rv) for (const bf of softBufs) { bf.x.globalAlpha = cv * 0.5; bf.x.fillStyle = '#fff'; bf.x.fillRect(n.x - ox, n.y - oy, n.w, n.h); }
         lit = true;
       }
-      if (lit) reveal = Math.max(reveal, PULSE.reveal);
+      if (lit && revealEnabled) reveal = Math.max(reveal, PULSE.reveal);
       // The current point of progress isn't drawn as its own shape at all -- solveField already feeds real power directly into
       // whichever real cells (net.stepCells, picked by physical proximity to the exact construction-time position -- see
       // chainPointAt) are actually there, and the ordinary per-cell glow above (the same code that lights any other charged cell)
