@@ -21,7 +21,7 @@
   z-index: -2;
   pointer-events: none;
   overflow: visible;
-  opacity: 0;      /* the board is invisible until the cursor's spotlight (below) finds it */
+  opacity: 0;      /* the board is invisible until the light effects find it (set to 0 to go back to that) */
 }
 
 /* The lit copy (only built when some element is set to give off light): the same board, brighter, revealed
@@ -33,7 +33,7 @@
   z-index: -2;
   pointer-events: none;
   overflow: visible;
-  opacity: 0.55;
+  opacity: 0;
   mix-blend-mode: screen;
 }
 
@@ -61,4 +61,14 @@
   z-index: -2;
   pointer-events: none;
   mix-blend-mode: screen;
+  opacity: 0.45;          /* set once by pcb-board.js (PULSE.layerOpacity); it never changes, so nothing on the layer jumps when a pulse starts or ends */
+}
+
+/* An element that was held invisible until the light reached it (PCB_SECTIONS in the page) fades in. */
+.pcb-fade-in {
+  animation: pcb-fade-in 1s ease-out;
+}
+@keyframes pcb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

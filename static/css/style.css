@@ -7,8 +7,9 @@
   --text-h2: #d6deed;
   --border: rgba(255, 255, 255, 0.15);
   --border-strong: rgba(255, 255, 255, 0.3);
-  --accent: #7fb2ff;
-  --accent-bg: rgba(127, 178, 255, 0.15);
+  --accent: #5FBF77;
+  --accent-bg: rgba(95, 191, 119, 0.15);
+  --accent-glow: rgba(95, 191, 119, 0.6);
   --turquoise: #40e0d0;
   --hover-bg: rgba(255, 255, 255, 0.05);
   --grid-minor: rgba(255, 255, 255, 0.013);
@@ -67,9 +68,13 @@ body::after {
 /* About Section */
 .about-section {
   display: flex;
-  align-items: center;
+  /* "safe center": centres short bios like before, but if the content grows too tall to centre without its top
+     edge passing the section's own top, it falls back to starting there instead -- so it only ever grows down. */
+  align-items: safe center;
   justify-content: center;
   padding: 50px;
+  padding-top: 180px;   /* clears the name header (position: absolute, top: 72px, ~67px tall) plus a gap, so the
+                            safe-center fallback above never sits under it even before centring is considered */
   gap: 50px;
   max-width: 900px;
   margin: auto;
@@ -86,6 +91,11 @@ body::after {
 .about-text h1 {
   font-size: 56px;
   color: var(--text-bright);
+  /* the name sits at the top-left of the content, under the nav bar, out of the centred column */
+  position: absolute;
+  top: 72px;
+  left: max(48px, calc(50% - 672px));   /* 48px left of the content column's edge; the page corner on narrow screens */
+  margin: 0;
 }
 
 .about-text p {
@@ -94,19 +104,36 @@ body::after {
   color: var(--text);
 }
 
+/* :not(.social-icon) -- the GitHub/LinkedIn links live inside this same paragraph now (see .about-avatar), and without this
+   they'd pick up the text-link colour and underline too, instead of their own icon styling further down. */
+.about-text p a:not(.social-icon) {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+}
+
+.about-text p a:not(.social-icon):hover {
+  background-color: var(--accent-bg);
+}
+
 /* General-purpose emphasis: brighter white rather than heavier weight —
    use anywhere in body copy a word/phrase should stand out. */
 .highlight {
   color: var(--text-bright);
 }
 
-.about-image {
-  flex: 0 0 200px;
+/* The photo sits inside the paragraph itself (floated, so the text wraps around it) rather than in its own
+   column -- a span, not a div, since it lives inside a <p> and only phrasing content is allowed there. */
+.about-avatar {
+  display: block;
+  float: left;
+  margin: 4px 24px 16px 0;
 }
 
-.about-image img {
-  width: 200px;
-  height: 200px;
+.about-avatar img {
+  display: block;
+  width: 130px;
+  height: 130px;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid var(--border-strong);
@@ -132,18 +159,18 @@ body::after {
 }
 
 .social-icon:hover {
-  color: var(--turquoise);
-  filter: drop-shadow(0 0 4px rgba(64, 224, 208, 0.5));
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px var(--accent-glow));
 }
 
 @media (max-width: 700px) {
-  .about-section {
-    flex-direction: column;
-    text-align: center;
+  .about-avatar {
+    margin: 4px 16px 12px 0;
   }
 
-  .about-image {
-    margin-top: 20px;
+  .about-avatar img {
+    width: 96px;
+    height: 96px;
   }
 
   .about-text h1 {
@@ -346,8 +373,12 @@ a.project-card-tag--gold:hover {
   grid-template-columns: 1fr;
   /* one card per screen: every row is at least a full viewport tall (svh so a mobile address bar doesn't
      count) and its card sits in the middle of it at its natural height */
-  grid-auto-rows: minmax(100vh, auto);
-  grid-auto-rows: minmax(100svh, auto);
+  /* The first row is just its card's height so the first project sits right under the "Projects" header; the second is a full screen
+     with its card centred, so the gap above it and the gap below it (down to the third card, whose row is just its own height) are the
+     same size. */
+  grid-template-rows: auto minmax(100vh, auto);
+  grid-template-rows: auto minmax(100svh, auto);
+  grid-auto-rows: auto;
   align-items: center;
   gap: 0;
   max-width: 1240px;
@@ -373,8 +404,7 @@ a.project-card-tag--gold:hover {
   font-size: 56px;   /* same as the name heading (.about-text h1) */
   font-weight: 600;
   letter-spacing: 0.5px;
-  max-width: 1240px;
-  margin: 40px auto 20px auto;
+  margin: 40px 0 20px max(48px, calc(50% - 672px));   /* the same left edge as the name heading (.about-text h1) */
   color: var(--text-h2);
 }
 
