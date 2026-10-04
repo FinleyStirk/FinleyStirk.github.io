@@ -1,0 +1,600 @@
+<!doctype html>
+<!--
+  AutoMate: the chess robot's scroll-driven demo. Scrolling scrubs through a
+  rendered frame sequence drawn to a pinned full-screen canvas, with captions
+  at marked moments. Frames load in chunks around wherever the visitor is.
+
+  The footage lives in frames/ (see frames/README.txt): frame_0001.webp ...,
+  manifest.json (frame count and fps) and markers.json (caption timings).
+  Phones get frames_mobile/ instead (same layout, lighter: 24 fps, smaller
+  frames), built from frames/ by render/make_mobile_frames.py. Swap the
+  folders' contents to change the footage -- nothing here needs editing. Generated from render/scroll_preview.html in the Chess Robot repo.
+
+  Optional URL parameters: ?debug (frame counter), ?frames=mobile|full, ?stops=0 (no caption scroll
+  stops), ?fit=cover|contain, ?vh=N (scroll length, screen heights x100).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AutoMate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- The site's own stylesheet: colours, fonts, nav bar. This page's styles below build on its variables. -->
+<link rel="stylesheet" href="/static/css/style.css?v=27" />
+<link rel="icon" type="image/png" href="/static/images/favicon_f.png">
+<style>
+  /* Colours, font and nav bar come from the site's style.css (--bg, --text, --text-bright, --accent, ...). */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto !important; }  /* the site's smooth scrolling would fight the caption scroll stops */
+  body { background-color: #000; }  /* black page round the picture */
+  /* The nav bar's name links home here (on the main page it's plain text). */
+  /* (Self-contained, so it doesn't rely on the site stylesheet having a .site-nav-name rule.) */
+  .site-nav a.site-nav-name { position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+                              color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.6px;
+                              border-bottom: 0; padding: 0 0 0 16px; }
+  /* The scrubbed section: tall track, sticky canvas inside it. Track height
+     sets how much scrolling the whole sequence takes. */
+  .track { position: relative; height: 400vh; }
+  .sticky { position: sticky; top: 40px; height: calc(100vh - 40px); overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; }
+  /* Captions: a heading box, optionally with a body-text box under it,
+     fading/sliding in on the left between their markers. */
+  .caption { position: absolute; left: clamp(16px, 5vw, 72px); top: 50%; width: min(380px, calc(100% - 32px));
+             display: flex; flex-direction: column; gap: 12px;
+             transform: translate(-24px, -50%); opacity: 0; pointer-events: none;
+             transition: opacity .5s ease, transform .5s ease; }
+  .caption.visible { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
+  .caption.right { left: auto; right: clamp(16px, 5vw, 72px); transform: translate(24px, -50%); }
+  .caption.right.visible { transform: translate(0, -50%); }
+  .panel { background: rgba(22, 22, 22, .8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+           border: 1px solid var(--border); border-radius: 20px; padding: 24px 26px; }
+  .panel h2 { margin: 0; font-size: clamp(22px, 2.4vw, 30px); font-weight: 700; line-height: 1.15; color: var(--text-bright); }
+  .panel p { margin: 0; color: var(--text); line-height: 1.6; font-size: 16px; }
+  /* Key words: the site's emphasis -- brighter white rather than heavier type. */
+  .panel p b { color: var(--text-bright); font-weight: inherit; }
+  /* Links as everywhere else on the site: accent green, a rule underneath, a tint on hover. */
+  .panel p a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+  .panel p a:hover { background-color: var(--accent-bg); }
+  /* The opening "AutoMate" caption: like the others, with a slightly bigger heading. */
+  .caption.intro .panel h2 { font-size: clamp(30px, 3.4vw, 46px); letter-spacing: -0.02em; }
+  /* Play: a chevron in the text colour, on a see-through dark backing, under the current boxes. Plays the
+     story forward at its real speed to the next caption (pressing again jumps
+     straight there); any scroll, swipe or key hands control back. */
+  .play { display: inline-flex; align-self: stretch; justify-content: center; padding: 8px 14px; margin: 0;
+          background: rgba(22, 22, 22, .45); border: 1px solid var(--border); border-radius: 14px;
+          backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);  /* like the boxes, but more see-through */
+          color: var(--text); cursor: pointer; pointer-events: auto; transition: color .2s ease, transform .2s ease, opacity .2s ease; }
+  .play:hover, .play:focus-visible { color: var(--text-bright); transform: translateY(3px); }
+  .play svg { width: 52px; height: 26px; }  /* one wide, flat chevron */
+  .caption:not(.visible) .play { pointer-events: none; }  /* hidden captions' buttons can't be clicked */
+  .panel.media { padding: 8px; }
+  .panel.media img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  /* A box that appears later starts collapsed -- the text above it sits centred
+     on its own -- then grows in when it's due, so the (centred) caption makes
+     room by gliding up. The negative margin cancels the caption's gap while
+     it's collapsed. */
+  .panel.media.later { max-height: 0; opacity: 0; overflow: hidden; margin-top: -12px;
+                       padding-top: 0; padding-bottom: 0; border-top-width: 0; border-bottom-width: 0;
+                       transition: max-height .6s ease, opacity .5s ease, margin-top .6s ease,
+                                   padding .6s ease, border-width .6s ease; }
+  .panel.media.later.shown { max-height: 60vh; opacity: 1; margin-top: 0; padding-top: 8px; padding-bottom: 8px;
+                             border-top-width: 1px; border-bottom-width: 1px; }
+  /* A caption's play button goes once its section is played out (e.g. when the
+     capture's footage appears -- the end of the story, so there's nowhere left to play to). */
+  .play { max-height: 80px; }
+  .play.done { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: -12px;
+               border-width: 0; overflow: hidden; pointer-events: none;
+               transition: max-height .5s ease, opacity .3s ease, padding .5s ease, margin-top .5s ease; }
+  @media (max-width: 640px) {  /* phones: sit at the bottom instead of the left */
+    .caption, .caption.right { top: auto; bottom: 16px; left: 16px; right: auto; transform: translateY(24px); }
+    .caption.visible, .caption.right.visible { transform: translateY(0); }
+  }
+  /* Portrait screens with the frame fitted across the width: captions sit
+     just under the picture (--frame-bottom is set by draw()). */
+  .fitted .caption, .fitted .caption.right { top: calc(var(--frame-bottom) + 14px); bottom: auto; gap: 8px; }
+  /* ...except the headings, which sit in the band just above the picture (draw() leaves
+     PORTRAIT_TITLE_SPACE for them). */
+  .fitted .caption .panel.heading { position: absolute; left: 0; right: 0;
+    top: calc(var(--frame-top) - var(--frame-bottom) - 14px - 10px); transform: translateY(-100%); }
+  .fitted .caption.intro .panel h2 { font-size: 26px; }
+  /* On the black space round the picture the captions don't need boxes. */
+  .fitted .caption .panel { padding: 0 4px; background: none; border: 0; border-radius: 0;
+                            backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .fitted .caption .panel.media { padding: 4px 0 0; }
+  .fitted .caption .panel.media.later { padding: 0; }
+  .fitted .caption .panel.media.later.shown { padding: 4px 0 0; }
+  /* ...and they just fade in and out, without sliding. */
+  .fitted .caption, .fitted .caption.right, .fitted .caption.visible, .fitted .caption.right.visible,
+  .fitted .panel.media.later, .fitted .panel.media.later.shown { transform: none; }
+  .fitted .panel h2 { font-size: 20px; }
+  .fitted .panel p { font-size: 14px; line-height: 1.5; }
+  .fitted .panel.media img { width: auto; max-width: 100%; max-height: 13vh; margin: 0 auto; }
+  .after { display: flex; align-items: center; justify-content: center; min-height: 100vh; min-height: 100svh;
+           padding: 56px 16px 72px; }
+  .after video { display: block; width: min(560px, 100%); height: auto; max-height: calc(100vh - 140px);
+                 object-fit: contain; border-radius: 20px; border: 1px solid var(--border); background: #000; }
+  .hud { display: none; }
+  .debug .hud { display: block; }
+  .hud { position: fixed; right: 12px; bottom: 12px; font: 12px/1.4 "Space Mono", ui-monospace, monospace;
+         color: var(--text-muted); background: rgba(0,0,0,.45); padding: 6px 8px; border-radius: 6px; }
+  .loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+             background: var(--bg); color: var(--text-muted); z-index: 2; font-family: "Space Mono", monospace; font-size: 14px; }
+</style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/#about">About</a>
+    <a href="/#projects">Projects</a>
+  </nav>
+  <div class="loading" id="loading">Loading…</div>
+
+  <section class="track" id="track">
+    <div class="sticky">
+      <canvas id="canvas"></canvas>
+      <div id="captions"></div>
+    </div>
+  </section>
+
+  <!-- After the scroll sequence: footage of a real game on the robot. Plays
+       (muted, looping) while it's on screen, pauses when it isn't. -->
+  <section class="after">
+    <video id="game" src="media/game.mp4" poster="media/game_poster.jpg" muted loop playsinline
+           preload="metadata" aria-label="A full game of chess being played on AutoMate"></video>
+  </section>
+
+  <div class="hud" id="hud"></div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  // The footage: swap these folders' contents to change it (frames/README.txt).
+  // Phones (portrait, or narrow screens) get the lighter frames_mobile/ set if
+  // there is one -- 24 fps, smaller frames -- and everything else frames/.
+  // ?frames=mobile / ?frames=full forces one.
+  const PHONE = window.matchMedia("(orientation: portrait), (max-width: 700px)").matches;
+  const WANT_MOBILE = params.get("frames") === "mobile" || (params.get("frames") !== "full" && PHONE);
+  let FRAMES = "frames/";
+  const VH_PER_SECOND = 60;  // scrolling per second of footage, in screen heights x100
+  // Frames are tagged with a version taken from the manifest's contents, so
+  // swapping in new footage (new manifest) makes browsers fetch the new frames
+  // instead of reusing cached old ones with the same file names.
+  let FRAMES_VERSION = "";
+  const frameUrl = (i) => `${FRAMES}frame_${String(i + 1).padStart(4, "0")}.webp?v=${FRAMES_VERSION}`;
+  let count = 0;             // frames in the sequence, from frames/manifest.json
+  let fps = 24;              // ...and its frame rate
+  if (params.has("debug")) document.body.classList.add("debug");
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  const track = document.getElementById("track");
+  const hud = document.getElementById("hud");
+
+  // Chunked loading: frames come in chunks of CHUNK. The chunk being viewed
+  // and the next AHEAD chunks load (nearest frame first, MAX_IN_FLIGHT at a
+  // time), plus BEHIND chunks back for scrolling up; anything further away is
+  // let go, so memory stays flat however long the sequence is. If a frame
+  // isn't in yet, the nearest one that is gets drawn until it arrives.
+  const CHUNK = 48, AHEAD = 4, BEHIND = 1, MAX_IN_FLIGHT = 6;
+  const frames = new Map();  // index -> Image, loading or loaded
+  const ready = new Set();   // indices loaded and decoded, ready to draw
+  let queue = [], inFlight = 0, failed = 0, scheduledChunk = -1, target = 0, shownOnce = false;
+
+  function load(i) {
+    const img = new Image();
+    img.pending = true;
+    frames.set(i, img);
+    inFlight++;
+    // Ready once loaded. decode() is only a head start (it decodes off the main
+    // thread so drawing doesn't stall) -- browsers can hold it back, e.g. in
+    // background tabs, so nothing waits on it.
+    img.onload = () => { finished(i, img, true); img.decode().catch(() => {}); };
+    img.onerror = () => finished(i, img, false);
+    img.src = frameUrl(i);
+  }
+
+  function finished(i, img, ok) {
+    if (!img.pending) return;  // already let go
+    img.pending = false;
+    inFlight--;
+    if (ok) ready.add(i); else failed++;
+    if (!ok && !shownOnce) {
+      const box = document.getElementById("loading");
+      box.textContent = "The frames failed to load.";
+      box.style.display = "flex";
+    }
+    if (ok && (i === target || current !== target)) update();  // the frame we wanted (or closer to it)
+    pump();
+  }
+
+  function pump() {
+    while (inFlight < MAX_IN_FLIGHT && queue.length) {
+      const i = queue.shift();
+      if (!frames.has(i)) load(i);
+    }
+  }
+
+  function schedule(index) {
+    const chunk = Math.floor(index / CHUNK);
+    if (chunk === scheduledChunk) return;
+    scheduledChunk = chunk;
+    const lo = Math.max(0, (chunk - BEHIND) * CHUNK);
+    const hi = Math.min(count - 1, (chunk + AHEAD + 1) * CHUNK - 1);
+    // Let go of frames well outside the window (one chunk of slack, so
+    // scrolling back and forth over a chunk edge doesn't reload).
+    for (const [i, img] of frames) {
+      if (i >= lo - CHUNK && i <= hi + CHUNK) continue;
+      if (img.pending) { img.pending = false; inFlight--; }
+      img.onload = img.onerror = null;
+      img.src = "";
+      frames.delete(i);
+      ready.delete(i);
+    }
+    // Nearest first: ahead of the current frame, then behind it.
+    queue = [];
+    for (let i = index; i <= hi; i++) if (!frames.has(i)) queue.push(i);
+    for (let i = index - 1; i >= lo; i--) if (!frames.has(i)) queue.push(i);
+    pump();
+  }
+
+  function nearestReady(index) {
+    for (let d = 0; d < count; d++) {
+      if (ready.has(index - d)) return index - d;
+      if (ready.has(index + d)) return index + d;
+      if (index - d < 0 && index + d >= count) break;
+    }
+    return -1;
+  }
+
+  // Shown between two markers (frame numbers from the folder's markers.json).
+  // `body` (optional) adds a box of text under the heading box, `media` (optional)
+  // an image/GIF box under that -- from the `mediaFrom` marker if given, else
+  // with the rest (a scroll stop catches it when it appears); `side: "right"`
+  // puts it on the right of the screen instead of the left.
+  // Body text is HTML (written here, not user input): <b> for key words,
+  // wiki() for a link to a Wikipedia article (opens in a new tab).
+  const wiki = (page, label) =>
+    `<a href="https://en.wikipedia.org/wiki/${page}" target="_blank" rel="noopener">${label}</a>`;
+  const CAPTIONS = [
+    { text: "AutoMate", from: "intro_start", to: "intro_end", intro: true,
+      body: `AutoMate is an <b>automatic chess robot</b> my friend ` +
+            `<a href="https://www.linkedin.com/in/joseph-birch-546683278/" target="_blank" rel="noopener">Joseph Birch</a> ` +
+            `and I built. It has <b>automatic move ` +
+            `detection</b> and the ability to <b>move pieces</b>, allowing you to play <b>full games of chess</b> against it. ` +
+            `The physical mechanisms are entirely <b>bespoke</b> and custom built by Joe; similarly, the entire codebase ` +
+            `was written by me, which handles both the <b>backend logic</b> and the <b>low level motor control</b>.` },
+    { text: "CoreXY Gantry",    from: "axis_a_start",          to: "assemble_start",
+      body: `Within the board is a custom-built ${wiki("CoreXY", "CoreXY")} belt system; this is the same ` +
+            `mechanism used in 3D printers. This system allows us to quickly move the ` +
+            `<b>central carriage</b> anywhere around the board, while keeping <b>both motors fixed</b> in place.` },
+    { text: "Piece Movement",   from: "piece_movement_start",  to: "piece_movement_end",
+      body: `The gantry system has a ${wiki("Servo_(radio_control)", "servo motor")} with a ` +
+            `<b>magnet</b> attached to it. As the magnet is only close enough to attract the pieces when it is ` +
+            `<b>directly under them</b>, by rotating the servo motor we can <b>toggle</b> whether or not it is ` +
+            `moving a piece.` },
+    { text: "Knight Movement",  from: "knight_movement_start", to: "knight_movement_end",
+      body: `One of the challenges of a 2D board is that knights can't just be ` +
+            `lifted up and over other pieces. Our solution was to make the <b>base of the knight smaller</b> than ` +
+            `the other pieces. This allows the knight to easily <b>slide between two pieces</b> along the edge ` +
+            `of a square, stopping it ever getting blocked in.` },
+    { text: "Capturing Pieces", from: "capture_start",         to: "capture_clip_end", side: "right",
+      body: `Moving pieces off the board often cannot be done with some simple straight line move. The ` +
+            `solution is to use ${wiki("Dijkstra%27s_algorithm", "Dijkstra's algorithm")} over the ` +
+            `<b>free squares</b> on the board to find the <b>shortest path</b> between the captured piece and its ` +
+            `destination. Once the captured piece has been removed, the robot can complete the initial ` +
+            `movement unobstructed.`,
+      // footage of the real robot capturing, added under the text once the demo's
+      // finished (before the camera pulls back)
+      media: "media/piece_capture.gif", mediaFrom: "capture_end", alt: "The real robot capturing a piece" },
+  ];
+  // The opening "AutoMate" caption runs from the first frame to the one before
+  // this marker (the first section's caption).
+  const INTRO_UNTIL = "axis_a_start";
+  let captions = [];  // [{el, from, to}] with frame numbers, once markers.json has loaded
+
+  const loadMarkers = () => fetch(`${FRAMES}markers.json`, { cache: "no-cache" })
+    .then((response) => (response.ok ? response.json() : {}))
+    .catch(() => ({}))
+    .then((markers) => {
+      markers.intro_start = 1;  // the opening caption's own span
+      markers.intro_end = Math.max(1, (markers[INTRO_UNTIL] || 2) - 1);
+      const container = document.getElementById("captions");
+      captions = CAPTIONS.filter((c) => c.from in markers && c.to in markers).map((c) => {
+        const el = document.createElement("div");
+        el.className = (c.side === "right" ? "caption right" : "caption") + (c.intro ? " intro" : "");
+        if (c.text) {
+          const heading = el.appendChild(document.createElement("div"));
+          heading.className = "panel heading";
+          heading.appendChild(document.createElement("h2")).textContent = c.text;
+        }
+        if (c.body) {
+          const body = el.appendChild(document.createElement("div"));
+          body.className = "panel";
+          body.appendChild(document.createElement("p")).innerHTML = c.body;
+        }
+        const playEl = el.appendChild(playButton());  // directly under the description
+        let mediaEl = null;
+        if (c.media) {  // an image/GIF in its own box under the text
+          const box = mediaEl = el.appendChild(document.createElement("div"));
+          box.className = c.mediaFrom ? "panel media later" : "panel media";
+          const img = box.appendChild(document.createElement("img"));
+          img.src = c.media;
+          img.alt = c.alt || c.text || "";
+        }
+        // With delayed media, another play button under it once it's up: the
+        // last one, which carries on just past the sequence to what's below.
+        const endPlayEl = c.mediaFrom ? el.appendChild(playButton()) : null;
+        if (endPlayEl) endPlayEl.classList.add("done");
+        container.appendChild(el);
+        const mediaFrom = c.mediaFrom && c.mediaFrom in markers ? markers[c.mediaFrom] : null;
+        return { el, from: markers[c.from], to: markers[c.to], mediaEl, mediaFrom, playEl, endPlayEl };
+      });
+      buildStops();
+      update();
+    });
+  let current = -1;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(canvas.clientWidth * dpr);
+    canvas.height = Math.round(canvas.clientHeight * dpr);
+    current = -1;
+    buildStops();
+    update();
+  }
+
+  // Landscape screens: cover-fit (like background-size: cover), filling the
+  // screen. Portrait screens (phones): the frame fits across the width, with
+  // only its sides trimmed (not cropped to its middle third), sitting high up
+  // so the captions have the dark space below it. ?fit=cover / ?fit=contain forces one.
+  const FIT = params.get("fit") || "auto";
+  const PORTRAIT_FRAME_TOP = 0.12;  // where the fitted frame sits in the space above/below it (0 top, 0.5 centre)
+  // ...and how much of the frame's width it keeps across the screen: the
+  // overhead capture shot needs the whole acrylic plate (storage columns and
+  // all), which spans the middle ~64% of the frame, so the sides beyond that go.
+  const PORTRAIT_KEEP_WIDTH = 0.58;
+  const PORTRAIT_TITLE_SPACE = 44;  // px above the fitted picture for the section headings / opening title
+  // Black round the picture (the frames themselves keep their own background).
+  const SURROUND = "#000";
+  function draw(img) {
+    const contain = FIT === "contain" || (FIT === "auto" && canvas.height > canvas.width);
+    const cover = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+    const scale = contain ? Math.min(cover, canvas.width / (img.naturalWidth * PORTRAIT_KEEP_WIDTH)) : cover;
+    const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+    ctx.fillStyle = SURROUND;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const dpr = window.devicePixelRatio || 1;
+    const titleSpace = contain ? PORTRAIT_TITLE_SPACE * dpr : 0;
+    const y = (canvas.height - h - titleSpace) * (contain ? PORTRAIT_FRAME_TOP : 0.5) + titleSpace;
+    ctx.drawImage(img, (canvas.width - w) / 2, y, w, h);
+    document.body.classList.toggle("fitted", contain);
+    document.body.style.setProperty("--frame-top", `${Math.round(y / dpr)}px`);
+    document.body.style.setProperty("--frame-bottom", `${Math.round((y + h) / dpr)}px`);
+  }
+
+  function scrollProgress() {
+    const rect = track.getBoundingClientRect();
+    const scrollable = track.offsetHeight - window.innerHeight;
+    return Math.min(1, Math.max(0, -rect.top / scrollable));
+  }
+
+  function update() {
+    if (!count) return;  // the manifest hasn't loaded yet
+    const progress = scrollProgress();
+    const index = Math.round(progress * (count - 1));
+    target = index;
+    schedule(index);
+    const shown = ready.has(index) ? index : nearestReady(index);
+    if (shown !== -1 && shown !== current) {
+      current = shown;
+      draw(frames.get(shown));
+    }
+    if (shown === index && !shownOnce) {  // the first real frame is up: drop the loading screen
+      shownOnce = true;
+      document.getElementById("loading").style.display = "none";
+    }
+    const frame = index + 1;  // markers use Blender's frame numbers, which start at 1
+    for (const c of captions) {
+      c.el.classList.toggle("visible", frame >= c.from && frame <= c.to);
+      if (c.mediaEl && c.mediaFrom !== null) {
+        c.mediaEl.classList.toggle("shown", frame >= c.mediaFrom);
+        c.playEl.classList.toggle("done", frame >= c.mediaFrom);  // played out: the footage is up...
+        if (c.endPlayEl) c.endPlayEl.classList.toggle("done", frame < c.mediaFrom);  // ...and the next one takes over
+      }
+    }
+    hud.textContent = `frame ${index + 1} / ${count}  ·  ${(progress * 100).toFixed(0)}%  ·  ` +
+      `${ready.size} loaded${shown !== index ? " (waiting)" : ""}`;
+  }
+
+
+  // Scroll stops: scrolling down past a caption's start catches the page
+  // there, holds it for STOP_HOLD_MS (swallowing the rest of a big scroll's
+  // momentum) so the caption can be read, then lets go. Each stop fires once
+  // per pass and re-arms after scrolling back up above it.
+  const SCROLL_STOPS = params.get("stops") !== "0";  // ?stops=0 turns them off
+  const STOP_HOLD_MS = 900;
+  // Stop exactly on the caption's start frame: the markers sit where the
+  // camera glide ends, so this catches the shot just as it arrives (the
+  // caption fades in during the hold), before any arrow starts drawing.
+  const STOP_OFFSET_FRAMES = 0;
+  let stops = [];                // [{y, armed}] in page scroll positions
+  // Trackpads keep sending shrinking "momentum" wheel events for a second or
+  // two after the fingers lift. After STOP_HOLD_MS the hold carries on until
+  // that stream dies out (no wheel event for MOMENTUM_GAP_MS) -- unless the
+  // events start growing again, which means a fresh, deliberate swipe -- and
+  // never longer than STOP_MAX_MS.
+  const MOMENTUM_GAP_MS = 120;
+  const STOP_MAX_MS = 3000;
+  let holdActive = false, holdStart = 0, holdUntil = 0, holdY = 0, lastScrollY = window.scrollY;
+  let lastWheelTime = 0, lastWheelSize = Infinity;
+
+  function buildStops() {
+    if (!count) return;
+    const scrollable = track.offsetHeight - window.innerHeight;
+    const at = (frame) => ({
+      y: Math.round(track.offsetTop + Math.min(1, (frame - 1 + STOP_OFFSET_FRAMES) / (count - 1)) * scrollable),
+      armed: true,
+    });
+    stops = captions.flatMap((c) => (c.mediaFrom !== null && c.mediaFrom !== undefined
+      ? [at(c.from), at(c.mediaFrom)] : [at(c.from)]));
+  }
+
+  function holding() {
+    if (!holdActive) return false;
+    const now = performance.now();
+    if (now < holdUntil) return true;  // the minimum hold
+    if (now - holdStart > STOP_MAX_MS || now - lastWheelTime > MOMENTUM_GAP_MS) holdActive = false;
+    return holdActive;  // still swallowing the tail of the momentum
+  }
+
+  function startHold(y) {
+    holdActive = true;
+    holdY = y;
+    holdStart = lastWheelTime = performance.now();
+    holdUntil = holdStart + STOP_HOLD_MS;
+    lastWheelSize = Infinity;
+  }
+
+  function onScroll() {
+    const y = window.scrollY;
+    if (SCROLL_STOPS) {
+      if (autoplay) {
+        // the play button is driving: it stops at the next caption itself
+      } else if (holding()) {
+        if (Math.abs(y - holdY) > 1) window.scrollTo(0, holdY);  // pin it while holding
+      } else {
+        for (const stop of stops) {
+          if (stop.armed && lastScrollY < stop.y && y >= stop.y) {  // crossed it going down
+            stop.armed = false;
+            startHold(stop.y);
+            window.scrollTo(0, stop.y);
+            break;
+          }
+          if (!stop.armed && y < stop.y - window.innerHeight * 0.5) stop.armed = true;  // re-arm above it
+        }
+      }
+    }
+    lastScrollY = window.scrollY;
+    update();
+  }
+
+  // While holding, swallow scroll input (wheel/trackpad momentum, touch drags, keys).
+  const swallow = (e) => { if (SCROLL_STOPS && holding()) e.preventDefault(); };
+  window.addEventListener("wheel", (e) => {
+    if (!SCROLL_STOPS || !holding()) return;
+    const now = performance.now(), size = Math.abs(e.deltaY);
+    // Past the minimum hold, a wheel event bigger than the last one is a new
+    // swipe (momentum only ever shrinks): let it through and end the hold.
+    if (now >= holdUntil && size > lastWheelSize * 1.3 + 4) {
+      holdActive = false;
+      return;
+    }
+    lastWheelTime = now;
+    lastWheelSize = size;
+    e.preventDefault();
+  }, { passive: false });
+  window.addEventListener("touchmove", swallow, { passive: false });
+  window.addEventListener("keydown", (e) => {
+    if (["ArrowDown", "PageDown", " ", "End"].includes(e.key)) swallow(e);
+  });
+
+  // Play button: scrolls the page so the footage plays forward at
+  // AUTOPLAY_SPEED x its real speed, to the next caption's stop -- landing exactly
+  // on it, with that stop disarmed so it doesn't then hold -- or to the end.
+  const PEEK = 0.15;  // how much of the screen's height the game footage shows at the end
+  const AUTOPLAY_SPEED = 1.6;  // x the footage's real speed (the render's gantry runs 1.8/1.6 fast to suit)
+  const CHEVRONS = '<svg viewBox="0 0 52 26" fill="none" stroke="currentColor" stroke-width="3" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8l20 11 20-11"/></svg>';
+  let autoplay = null;  // {y, target, stop, last} while playing
+  function playButton() {
+    const button = document.createElement("button");
+    button.className = "play";
+    button.type = "button";
+    button.setAttribute("aria-label", "Play to the next part");
+    button.innerHTML = CHEVRONS;
+    // First press plays; pressing again while it plays jumps straight to where it's heading.
+    button.addEventListener("click", (e) => { e.stopPropagation(); autoplay ? finishAutoplay() : startAutoplay(); });
+    return button;
+  }
+  function startAutoplay() {
+    if (!count) return;
+    const scrollable = track.offsetHeight - window.innerHeight;
+    // With no caption left, carry on just past the sequence: far enough that
+    // the top of the game footage below peeks up from the bottom of the screen.
+    const gameTop = document.getElementById("game").getBoundingClientRect().top + window.scrollY;
+    const end = Math.max(track.offsetTop + scrollable, gameTop - window.innerHeight * (1 - PEEK));
+    const stop = stops.filter((s) => s.y > window.scrollY + 2).sort((a, b) => a.y - b.y)[0] || null;
+    holdActive = false;  // a hold in progress gives way
+    autoplay = { y: window.scrollY, target: stop ? stop.y : end, stop, last: null,
+                 speed: AUTOPLAY_SPEED * fps * (scrollable / (count - 1)) };  // px per second
+    document.querySelectorAll(".play").forEach((b) => b.classList.add("playing"));
+    requestAnimationFrame(stepAutoplay);
+  }
+  function stepAutoplay(time) {
+    if (!autoplay) return;
+    const dt = autoplay.last === null ? 0 : Math.min(0.1, (time - autoplay.last) / 1000);
+    autoplay.last = time;
+    autoplay.y = Math.min(autoplay.target, autoplay.y + autoplay.speed * dt);
+    window.scrollTo(0, autoplay.y);
+    if (autoplay.y >= autoplay.target) {
+      finishAutoplay();
+      return;
+    }
+    requestAnimationFrame(stepAutoplay);
+  }
+  function finishAutoplay() {  // land on the target now (also the second press)
+    if (!autoplay) return;
+    window.scrollTo(0, autoplay.target);
+    if (autoplay.stop) autoplay.stop.armed = false;  // arrived on purpose: no hold here
+    stopAutoplay();
+    lastScrollY = window.scrollY;
+    update();
+  }
+  function stopAutoplay() {
+    autoplay = null;
+    document.querySelectorAll(".play").forEach((b) => b.classList.remove("playing"));
+  }
+  // Any scrolling of the visitor's own takes over again.
+  ["wheel", "touchstart", "keydown"].forEach((type) =>
+    window.addEventListener(type, () => { if (autoplay) stopAutoplay(); }, { passive: true }));
+
+  // The game footage after the sequence plays while at least half of it is on screen.
+  const game = document.getElementById("game");
+  new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) game.play().catch(() => {});
+    else game.pause();
+  }, { threshold: 0.5 }).observe(game);
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", resize);
+  // Last, once everything above exists: pick the frame folder (falling back
+  // to frames/ if there's no mobile set), read its frame count, size the
+  // scroll track to the footage's length, then start (resize() sizes the
+  // canvas and update() schedules the first chunks) and load its captions.
+  // Always re-checked with the server (it's tiny), so a swap shows up straight away.
+  const manifestOf = (folder) => fetch(`${folder}manifest.json`, { cache: "no-cache" })
+    .then((response) => { if (!response.ok) throw new Error(folder); return response.text(); })
+    .then((text) => {
+      let hash = 0;  // short fingerprint of the manifest's contents
+      for (const ch of text) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+      FRAMES_VERSION = hash.toString(36);
+      return JSON.parse(text);
+    });
+  (WANT_MOBILE ? manifestOf("frames_mobile/").then((m) => { FRAMES = "frames_mobile/"; return m; })
+                                             .catch(() => manifestOf("frames/"))
+               : manifestOf("frames/"))
+    .then((manifest) => {
+      count = manifest.count;
+      fps = manifest.fps;
+      if (params.has("debug")) console.log(`[automate] ${FRAMES}: ${count} frames at ${manifest.fps} fps`);
+      const vh = params.get("vh") ? parseInt(params.get("vh"), 10)
+                                  : Math.round((count / manifest.fps) * VH_PER_SECOND);
+      track.style.height = `${vh}vh`;
+      resize();
+      loadMarkers();
+    })
+    .catch(() => { document.getElementById("loading").textContent = "The frames failed to load."; });
+</script>
+</body>
+</html>

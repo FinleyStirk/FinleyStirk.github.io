@@ -1,0 +1,17 @@
+{
+ "axis_a_start": 8,
+ "axis_a_end": 83,
+ "axis_b_start": 90,
+ "axis_b_end": 165,
+ "diagonal_start": 172,
+ "diagonal_end": 273,
+ "assemble_start": 288,
+ "assemble_end": 438,
+ "piece_movement_start": 553,
+ "piece_movement_end": 590,
+ "knight_movement_start": 854,
+ "knight_movement_end": 970,
+ "capture_start": 1290,
+ "capture_end": 2015,
+ "capture_clip_end": 2087
+}
