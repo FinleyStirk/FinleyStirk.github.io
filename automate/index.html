@@ -68,7 +68,8 @@
           color: var(--text); cursor: pointer; pointer-events: auto; transition: color .2s ease, transform .2s ease, opacity .2s ease; }
   .play:hover, .play:focus-visible { color: var(--text-bright); transform: translateY(3px); }
   .play svg { width: 52px; height: 26px; }  /* one wide, flat chevron */
-  .caption:not(.visible) .play { pointer-events: none; }  /* hidden captions' buttons can't be clicked */
+  .caption:not(.visible) .play { pointer-events: none; }
+  .caption.measuring, .caption.measuring * { transition: none !important; }  /* hidden captions' buttons can't be clicked */
   .panel.media { padding: 8px; }
   .panel.media img { display: block; width: 100%; height: auto; border-radius: 8px; }
   /* A box that appears later starts collapsed -- the text above it sits centred
@@ -93,12 +94,13 @@
   }
   /* Portrait screens with the frame fitted across the width: captions sit
      just under the picture (--frame-bottom is set by draw()). */
-  .fitted .caption, .fitted .caption.right { top: calc(var(--frame-bottom) + 14px); bottom: auto; gap: 8px; }
+  .fitted .caption, .fitted .caption.right { top: calc(var(--frame-bottom) + 14px); bottom: auto; gap: 8px;
+                                             left: 16px; right: 16px; width: auto; }  /* centred: even margins */
   /* ...except the headings, which sit in the band just above the picture (draw() leaves
      PORTRAIT_TITLE_SPACE for them). */
   .fitted .caption .panel.heading { position: absolute; left: 0; right: 0;
     top: calc(var(--frame-top) - var(--frame-bottom) - 14px - 10px); transform: translateY(-100%); }
-  .fitted .caption.intro .panel h2 { font-size: 26px; }
+  .fitted .caption.intro .panel h2 { font-size: 30px; }
   /* On the black space round the picture the captions don't need boxes. */
   .fitted .caption .panel { padding: 0 4px; background: none; border: 0; border-radius: 0;
                             backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -108,9 +110,9 @@
   /* ...and they just fade in and out, without sliding. */
   .fitted .caption, .fitted .caption.right, .fitted .caption.visible, .fitted .caption.right.visible,
   .fitted .panel.media.later, .fitted .panel.media.later.shown { transform: none; }
-  .fitted .panel h2 { font-size: 20px; }
-  .fitted .panel p { font-size: 14px; line-height: 1.5; }
-  .fitted .panel.media img { width: auto; max-width: 100%; max-height: 13vh; margin: 0 auto; }
+  .fitted .panel h2 { font-size: 24px; }
+  .fitted .panel p { font-size: 16px; line-height: 1.5; }
+  .fitted .panel.media img { width: auto; max-width: 100%; max-height: 11vh; margin: 0 auto; }
   .after { display: flex; align-items: center; justify-content: center; min-height: 100vh; min-height: 100svh;
            padding: 56px 16px 72px; }
   .after video { display: block; width: min(560px, 100%); height: auto; max-height: calc(100vh - 140px);
@@ -330,6 +332,8 @@
         const mediaFrom = c.mediaFrom && c.mediaFrom in markers ? markers[c.mediaFrom] : null;
         return { el, from: markers[c.from], to: markers[c.to], mediaEl, mediaFrom, playEl, endPlayEl };
       });
+      measureCaptionRoom();
+      current = -1;  // redraw with the room the captions need
       buildStops();
       update();
     });
@@ -340,6 +344,7 @@
     canvas.width = Math.round(canvas.clientWidth * dpr);
     canvas.height = Math.round(canvas.clientHeight * dpr);
     current = -1;
+    measureCaptionRoom();
     buildStops();
     update();
   }
@@ -357,16 +362,45 @@
   const PORTRAIT_TITLE_SPACE = 44;  // px above the fitted picture for the section headings / opening title
   // Black round the picture (the frames themselves keep their own background).
   const SURROUND = "#000";
+  const isFitted = () => FIT === "contain" || (FIT === "auto" && canvas.height > canvas.width);
+  // Phone layout: how much room (CSS px) the tallest caption needs under the
+  // picture, measured in its fullest state (any delayed media shown), so the
+  // picture can shrink to leave that much rather than captions running off.
+  let captionRoom = 0;
+  function measureCaptionRoom() {
+    captionRoom = 0;
+    if (!isFitted()) return;
+    document.body.classList.add("fitted");  // measure with the phone styles applied
+    let tallest = 0;
+    for (const c of captions) {
+      const saved = [c.mediaEl, c.playEl, c.endPlayEl].map((e) => e && e.className);
+      c.el.classList.add("measuring");
+      if (c.mediaEl) {  // its fullest state: media up, the end chevron instead of the first
+        c.mediaEl.classList.add("shown");
+        c.playEl.classList.add("done");
+        if (c.endPlayEl) c.endPlayEl.classList.remove("done");
+      }
+      tallest = Math.max(tallest, c.el.offsetHeight);
+      [c.mediaEl, c.playEl, c.endPlayEl].forEach((e, i) => { if (e) e.className = saved[i]; });
+      void c.el.offsetHeight;  // settle the restored state before transitions come back
+      c.el.classList.remove("measuring");
+    }
+    captionRoom = tallest ? tallest + 14 + 12 : 0;  // + the gap under the picture and a margin at the bottom
+  }
   function draw(img) {
-    const contain = FIT === "contain" || (FIT === "auto" && canvas.height > canvas.width);
+    const contain = isFitted();
+    const dpr = window.devicePixelRatio || 1;
+    const titleSpace = contain ? PORTRAIT_TITLE_SPACE * dpr : 0;
+    const room = contain ? captionRoom * dpr : 0;  // the tallest caption has to fit under the picture
     const cover = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
-    const scale = contain ? Math.min(cover, canvas.width / (img.naturalWidth * PORTRAIT_KEEP_WIDTH)) : cover;
+    let scale = contain ? Math.min(cover, canvas.width / (img.naturalWidth * PORTRAIT_KEEP_WIDTH)) : cover;
+    if (contain && room) scale = Math.min(scale, Math.max(0.1, canvas.height - titleSpace - room) / img.naturalHeight);
     const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
     ctx.fillStyle = SURROUND;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const dpr = window.devicePixelRatio || 1;
-    const titleSpace = contain ? PORTRAIT_TITLE_SPACE * dpr : 0;
-    const y = (canvas.height - h - titleSpace) * (contain ? PORTRAIT_FRAME_TOP : 0.5) + titleSpace;
+    const spare = canvas.height - h - titleSpace;
+    const y = contain ? titleSpace + Math.min(spare * PORTRAIT_FRAME_TOP, Math.max(0, spare - room))
+                      : (canvas.height - h) * 0.5;
     ctx.drawImage(img, (canvas.width - w) / 2, y, w, h);
     document.body.classList.toggle("fitted", contain);
     document.body.style.setProperty("--frame-top", `${Math.round(y / dpr)}px`);
