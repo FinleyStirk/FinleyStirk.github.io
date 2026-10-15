@@ -93,9 +93,19 @@
 
   // Start (on) or rest (off) a card's video -- the same rules whichever thing decides it.
   const drive = (video, on) => {
+    video.wantPlay = on;
     if (on) {
       if (video.dataset.startTime !== undefined && video.dataset.everPlayed === undefined) {
-        video.currentTime = startTimeFor(video);
+        video.dataset.everPlayed = 'true';
+        // A seek made before the video has its metadata is dropped once that arrives, and it would play from 0 instead --
+        // not the start-time frame its poster shows, so it visibly jumps. Seek once the metadata is in, then play.
+        const start = () => {
+          video.currentTime = startTimeFor(video);
+          if (video.wantPlay) play(video);
+        };
+        if (video.readyState >= 1) start();
+        else video.addEventListener('loadedmetadata', start, { once: true });
+        return;
       }
       video.dataset.everPlayed = 'true';
       play(video);

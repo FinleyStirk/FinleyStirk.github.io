@@ -1,5 +1,5 @@
-/* Background for the home page: the generative PCB drawn by pcb-board.js. Sits behind all content;
-   the page's own faint grid pattern is switched off so it doesn't fight the traces. */
+/* Background for the About and Projects pages: the generative PCB drawn by pcb-board.js. Sits behind all
+   content; the page's own faint grid pattern is switched off so it doesn't fight the traces. */
 :root {
   /* black-and-white scheme for this page: dark grey ground, neutral greys for text (overrides style.css) */
   --bg: #161616;
@@ -21,20 +21,7 @@
   z-index: -2;
   pointer-events: none;
   overflow: visible;
-  opacity: 0;      /* the board is invisible until the light effects find it (set to 0 to go back to that) */
-}
-
-/* The lit copy (only built when some element is set to give off light): the same board, brighter, revealed
-   inside a soft halo around each lit element by a mask inside the SVG. */
-#pcb-board-glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -2;
-  pointer-events: none;
-  overflow: visible;
-  opacity: 0;
-  mix-blend-mode: screen;
+  opacity: 0;      /* the board itself is invisible: it only shows where the light effects on #pcb-pulse reveal it */
 }
 
 /* Text blocks and project cards are drawn as chips on the board (pcb-board.js), so the page's own opaque

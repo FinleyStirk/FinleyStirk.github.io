@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finley Stirk</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=23" />
-  <!-- old cyan-glow board: <link rel="stylesheet" href="/static/css/circuit-board.css?v=15" /> -->
-  <link rel="stylesheet" href="/static/css/pcb-board.css?v=33" />
+  <link rel="stylesheet" href="/static/css/style.css?v=48" />
+  <link rel="stylesheet" href="/static/css/pcb-board.css?v=34" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,28 +13,27 @@
   <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
   <!-- The background board's page-specific setup (read by pcb-board.js). PCB_LINKS: the cables drawn between page elements, one per
        line, [from, to, width in wires (optional)] -- anything not listed is not joined. Scroll no longer needs to be stretched to
-       match a zigzagging cable's length: the chain-steering system (see pcb-board.js) drives scroll position directly off progress
+       match a zigzagging cable's length: the chain-steering system (see pcb-scroll.js) drives scroll position directly off progress
        along the real cable path, so a horizontal stretch already takes as long to scroll through as its real length, with no extra
        page height needed to force it.
        PCB_SECTIONS: what activates each big section of the page. start = the element the light begins from; trigger = 'load' (when
        the page opens) or 'scroll' (when the scroll line first reaches it); reveal = elements that stay invisible until the light
        reaches them. Light travels along the cables between the elements of one section only. A heading's text counts as the heading. -->
   <script>
-    window.PCB_LINKS = [
-      ['.about-text h1', '.about-text p'],
-      ['.about-text p', '#projects'],
-      ['#projects', '.project-grid > :nth-child(1)'],
-      ['.project-grid > :nth-child(1)', '.project-grid > :nth-child(2)'],
-      ['.project-grid > :nth-child(2)', '.project-grid > :nth-child(3)'],
+    window.PCB_LINKS = [];
+    // PCB_POWERED: elements that stay powered for good (this page doesn't scroll, so the line never passes over the about box to charge
+    // it). decayLength: px of wire its power falls to 1/e over -- gentler than a line-charged element's 6px, so it lights the area round the box.
+    window.PCB_POWERED = [
+      { el: '.about-text p', decayLength: 30 },
     ];
     window.PCB_SECTIONS = [
-      { name: 'about', start: '.about-text h1', trigger: 'load', reveal: ['.about-text p'] },
-      { name: 'projects', start: '#projects', trigger: 'scroll', reveal: ['.project-grid > :nth-child(1)'] },   // the header lights Topogmesh
+      { name: 'about', start: '.about-text p', trigger: 'load', reveal: [] },   // the about box is lit as soon as the page loads, nothing to reveal
     ];
     // Everything that reveals starts invisible (before first paint, so nothing flashes). If the board script never runs, show it after 4s.
     (function () {
       var sel = [];
       window.PCB_SECTIONS.forEach(function (s) { sel = sel.concat(s.reveal); });
+      if (!sel.length) return;
       var st = document.createElement('style');
       st.textContent = sel.join(',') + '{opacity:0}';
       document.head.appendChild(st);
@@ -45,18 +43,18 @@
 </head>
 <body>
   <!-- Site navigation: a thin bar fixed to the top of the window. Plain <a>s (no <ul>/<li>) on purpose: the
-       PCB background treats list items as components. The three filler links go nowhere yet. -->
+       PCB background treats list items as components. -->
   <nav class="site-nav" aria-label="Main">
-    <a href="#about" data-nav="about">About</a>
-    <a href="#projects" data-nav="projects">Projects</a>
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/" class="is-active" aria-current="page">About</a>
+    <a href="/projects/">Projects</a>
   </nav>
 
   <section class="about-section" id="about">
     <div class="about-text">
-      <h1><span class="text-panel">Finley Stirk</span></h1>
       <p>
         <span class="about-avatar">
-          <img src="/static/images/profile_picture.png" alt="Picture of Me" />
+          <img src="/static/images/profile_picture.jpg" alt="Picture of Me" />
           <span class="social-links">
             <a href="https://github.com/FinleyStirk" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-icon">
               <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -82,120 +80,11 @@
     </div>
   </section>
 
-  <h2 class="projects-title" id="projects"><span class="text-panel">Projects</span></h2>
-  <div class="project-grid">
-    <a href="/weeknotes/05-09-25.html" class="project-card">
-      <div class="project-card-media">
-        <video
-          class="project-card-video project-card-video--topogmesh"
-          src="/static/media/projects/topogmesh/rinjani_wireframe_flyover.mp4"
-          poster="/static/media/projects/topogmesh/rinjani_wireframe_flyover_poster.png"
-          data-start-time="4"
-          muted
-          loop
-          playsinline
-          preload="metadata"
-        ></video>
-      </div>
-      <div class="project-card-text">
-        <h3>Topogmesh</h3>
-        <p>An open source data visualisation tool which uses satelite and OpenStreetMap data to create 3D printable models of cities and terrain</p>
-        <div class="project-card-tags">
-          <span class="project-card-tag">Python</span>
-          <span class="project-card-tag">Geospatial</span>
-          <span class="project-card-tag">Meshes</span>
-          <span class="project-card-tag">GDAL</span>
-          <span class="project-card-tag">OSM</span>
-        </div>
-      </div>
-    </a>
-
-    <div class="project-card" id="automate-project">
-      <a class="project-card-link-overlay" href="/automate/" aria-label="Automate"></a>
-      <div class="project-card-media">
-        <video
-          class="project-card-video project-card-video--automate"
-          src="/static/media/projects/chess_robot/fools_mate2.mp4"
-          poster="/static/media/projects/chess_robot/fools_mate2_poster.png"
-          muted
-          loop
-          playsinline
-          preload="metadata"
-        ></video>
-      </div>
-      <div class="project-card-text">
-        <h3>Automate</h3>
-        <p>A robot designed to help people with motor disabilities play over the board chess using accessible inputs like eye gaze tracking and voice controls</p>
-        <div class="project-card-tags">
-          <a
-            class="project-card-tag project-card-tag--gold"
-            href="https://awards.theengineer.co.uk/live/en/page/2023-winners"
-            target="_blank"
-            rel="noopener noreferrer"
-          >C2I Young Innovator Winner 2024</a>
-          <a
-            class="project-card-tag project-card-tag--gold"
-            href="https://www.thebigbang.org.uk/the-big-bang-competition/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >The Big Bang Competition Senior Technology Prize 2024</a>
-        </div>
-      </div>
-    </div>
-
-    <a href="/projects/string-art.html" class="project-card">
-      <div class="project-card-media">
-        <video
-          class="project-card-video project-card-video--stringart"
-          src="/static/media/string_art/audrey_navy.mp4"
-          poster="/static/media/string_art/blank_canvas_preview.png"
-          muted
-          loop
-          playsinline
-          preload="metadata"
-        ></video>
-      </div>
-      <div class="project-card-text">
-        <h3>String Art</h3>
-        <p>String art is an art technique where you construct an image using only straight lines wrapped around nails on a circular board. In this project I created an algorithm to convert arbitrary images into string art</p>
-        <div class="project-card-tags">
-          <span class="project-card-tag">Python</span>
-          <span class="project-card-tag">Graphics</span>
-          <span class="project-card-tag">Optimization</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Autocamcribs — temporarily removed, keep for possible reinstatement
-    <a href="https://devpost.com/software/auto-camcrib" class="project-card">
-      <img src="/static/images/projects/autocamcribs.jpeg" alt="Autocamcribs image">
-      <div class="project-card-text">
-        <h3>Autocamcribs</h3>
-        <p>An AI study assistant which procedurally animates mathmatical explanation videos tailered to the users homework questions</p>
-      </div>
-    </a>
-    -->
-
-    <!-- Placeholder: keeps this row's space reserved (so String Art isn't
-         the last card and still has room to pass through the viewport's
-         centre on scroll) until something replaces it here. -->
-    <div class="project-card-placeholder"></div>
-
-    <!-- Charvis — temporarily removed, keep for possible reinstatement
-    <a href="https://devpost.com/software/charvis" class="project-card">
-      <img src="/static/images/projects/charvis.jpeg" alt="charvis image">
-      <div class="project-card-text">
-        <h3>Charvis</h3>
-        <p>An AR pair of glasses which uses computer vision and machine learning to draw arrows showing the best move in a game of chess</p>
-      </div>
-    </a>
-    -->
-  </div>
-  <script src="/static/js/cursor-glow.js?v=4" defer></script>
-  <script src="/static/js/site-nav.js?v=2" defer></script>
-  <script src="/static/js/center-video.js?v=7" defer></script>
-  <!-- old cyan-glow board: <script src="/static/js/circuit-board.js?v=61" defer></script> -->
-  <script src="/static/js/pcb-board.js?v=219" defer></script>
+  <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+  <script src="/static/js/pcb-gen.js?v=6" defer></script>
+  <script src="/static/js/pcb-scroll.js?v=13" defer></script>
+  <script src="/static/js/pcb-board.js?v=239" defer></script>
 
 </body>
 </html>

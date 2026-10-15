@@ -61,12 +61,12 @@ body::after {
   align-items: safe center;
   justify-content: center;
   padding: 50px;
-  padding-top: 180px;   /* clears the name header (position: absolute, top: 72px, ~67px tall) plus a gap, so the
-                            safe-center fallback above never sits under it even before centring is considered */
+  padding-top: 90px;   /* clears the fixed 40px nav bar plus a gap; the rest of the section's height still
+                           centres the box (see align-items above), just higher up than a full 50vh split would */
   gap: 50px;
   max-width: 900px;
   margin: auto;
-  /* fill the first screen (svh so a mobile address bar doesn't count), so "Projects" starts below the fold */
+  /* fill the first screen (svh so a mobile address bar doesn't count) */
   box-sizing: border-box;
   min-height: 100vh;
   min-height: 100svh;
@@ -74,16 +74,6 @@ body::after {
 
 .about-text {
   flex: 1;
-}
-
-.about-text h1 {
-  font-size: 56px;
-  color: var(--text-bright);
-  /* the name sits at the top-left of the content, under the nav bar, out of the centred column */
-  position: absolute;
-  top: 72px;
-  left: max(48px, calc(50% - 672px));   /* 48px left of the content column's edge; the page corner on narrow screens */
-  margin: 0;
 }
 
 .about-text p {
@@ -159,10 +149,6 @@ body::after {
   .about-avatar img {
     width: 96px;
     height: 96px;
-  }
-
-  .about-text h1 {
-    font-size: 40px;
   }
 }
 
@@ -267,14 +253,6 @@ body::after {
   mix-blend-mode: screen;
 }
 
-/* Scale up to fill the box (cropping the excess) instead of shrinking to
-   fit, anchored to the top-left of the source diagram so it reads larger
-   in the card. */
-.project-card-img-zoom-tl {
-  object-fit: cover !important;
-  object-position: left top !important;
-}
-
 /* Stretched to the full height of the row (media box included) so the
    tags row below can be pushed down to sit flush with the box's bottom
    edge via margin-top: auto, rather than just trailing the paragraph. */
@@ -361,7 +339,7 @@ a.project-card-tag--gold:hover {
   grid-template-columns: 1fr;
   /* one card per screen: every row is at least a full viewport tall (svh so a mobile address bar doesn't
      count) and its card sits in the middle of it at its natural height */
-  /* The first row is just its card's height so the first project sits right under the "Projects" header; the second is a full screen
+  /* The first row is just its card's height so the first project sits right under the nav bar; the second is a full screen
      with its card centred, so the gap above it and the gap below it (down to the third card, whose row is just its own height) are the
      same size. */
   grid-template-rows: auto minmax(100vh, auto);
@@ -369,15 +347,74 @@ a.project-card-tag--gold:hover {
   grid-auto-rows: auto;
   align-items: center;
   gap: 0;
-  max-width: 1240px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 40px 20px;
+  /* room after the last card for the page to scroll it to the middle of the window while the light is in it (pcb-scroll.js
+     centres the lit card) -- about half a window, less half a typical card */
+  padding-bottom: max(40px, calc(50svh - 150px));
+}
+
+/* Wide screens: two cards side by side, each stacking its video above its text. Rows are just their cards' height (not a
+   screen each, as in one column); the gap leaves the board room to route its cables between neighbouring cards. */
+@media (min-width: 900px) {
+  .project-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    align-items: stretch;
+    gap: 72px;
+    grid-auto-flow: row dense;   /* lets a card placed in column 1 (below) fill the gap left of the one before it */
+  }
+
+  /* Snake order: every other row runs right to left (1 2 / 4 3 / 5 6 ...), so each card sits next to the one before it and the
+     cables joining them in order (PCB_LINKS) snake down the page instead of jumping back across it at every row. */
+  .project-grid > :nth-child(4n + 3) {
+    grid-column: 2;
+  }
+
+  .project-grid > :nth-child(4n + 4) {
+    grid-column: 1;
+  }
+
+  .project-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 26px;
+  }
+
+  .project-card img,
+  .project-card-media {
+    width: 100%;
+    max-width: none;
+    flex-basis: auto;
+  }
+}
+
+/* Stacked cards (two columns, and phones): the title goes at the top of the card, above the video. The text block steps out of
+   the way (display: contents), so its title, paragraph and tags sit directly in the card's column and the title can be moved
+   first; the tags keep margin-top: auto, so they still sit at the bottom of every card in a row alike. */
+@media (min-width: 900px), (max-width: 600px) {
+  .project-card-text {
+    display: contents;
+  }
+
+  .project-card-text h3 {
+    order: -1;
+    margin: 0;
+  }
 }
 
 @media (max-width: 600px) {
   .project-card {
     flex-direction: column;
     text-align: center;
+    gap: 20px;   /* title, video, paragraph and tags are each spaced by this now (see the stacked-card rule above) */
+  }
+
+  .project-card-tags {
+    justify-content: center;   /* centred like the title and text above them */
   }
 
   .project-card img,
@@ -387,19 +424,10 @@ a.project-card-tag--gold:hover {
   }
 }
 
-.projects-title {
-  text-align: left;
-  font-size: 56px;   /* same as the name heading (.about-text h1) */
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  margin: 40px 0 20px max(48px, calc(50% - 672px));   /* the same left edge as the name heading (.about-text h1) */
-  color: var(--text-h2);
-}
-
-@media (max-width: 700px) {
-  .projects-title {
-    font-size: 40px;   /* and it shrinks with the name heading on small screens */
-  }
+/* clears the fixed 40px nav bar: with the grid's own 40px top padding this matches the about section's 90px. Padding on the body,
+   not a margin on the grid, so nothing collapses through the body and moves the board (positioned inside it) down. */
+.projects-page {
+  padding-top: 50px;
 }
 
 /* --- Weeknotes Page Styles --- */
@@ -494,20 +522,6 @@ a.project-card-tag--gold:hover {
   color: var(--text-bright);
 }
 
-.back-link {
-  display: inline-block;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: var(--text);
-  text-decoration: underline;
-}
-
 .post-content p {
   font-size: 18px;
   line-height: 1.8;
@@ -531,7 +545,14 @@ a.project-card-tag--gold:hover {
   text-align: center;
 }
 
-.post-image img {
+.post-image--wide {
+  max-width: 640px;
+}
+
+.post-image img,
+.post-image video {
+  display: block;
+  margin: 0 auto;
   max-width: 100%;
   height: auto;
   border-radius: 8px;
@@ -559,75 +580,6 @@ a.project-card-tag--gold:hover {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-
-.blog-link {
-  display: flex;
-  align-items: flex-start;
-  padding: 25px 10px;
-  text-decoration: none;
-  color: var(--text);
-  border-bottom: 1px solid var(--border);
-  transition: all 0.2s ease;
-}
-
-.blog-date {
-  font-family: 'Space Mono', 'Courier New', monospace;
-  font-size: 14px;
-  color: var(--text-muted);
-  min-width: 120px;
-  margin-top: 6px;
-}
-
-
-.blog-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.blog-title {
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.blog-desc {
-  font-size: 16px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* Hover Effects */
-.blog-link:hover {
-  background-color: var(--hover-bg);
-  padding-left: 20px;
-  border-bottom-color: var(--border-strong);
-}
-
-.blog-link:hover .blog-title {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-}
-
-@media (max-width: 600px) {
-  .blog-link {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .blog-date {
-    font-size: 12px;
-    margin-top: 0;
-  }
-
-  .blog-title {
-    font-size: 20px;
-  }
 }
 
 /* --- Blog Posts --- */
@@ -699,10 +651,8 @@ a.project-card-tag--gold:hover {
 .post-content li,
 .post-date,
 .code-link,
-.back-link,
 .text-panel,
-.weeknote-link,
-.blog-link {
+.weeknote-link {
   position: relative;
   z-index: 0;
 }
@@ -714,8 +664,7 @@ a.project-card-tag--gold:hover {
 .post-content p::before,
 .post-content li::before,
 .post-date::before,
-.code-link::before,
-.back-link::before {
+.code-link::before {
   content: "";
   position: absolute;
   inset: -9px -24px;
@@ -755,8 +704,7 @@ a.project-card-tag--gold:hover {
 
 /* Already have their own generous padding to act as the buffer, so no
    extra inset needed beyond their own box. */
-.weeknote-link::before,
-.blog-link::before {
+.weeknote-link::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -801,6 +749,56 @@ html {
   white-space: nowrap;
   background: var(--bg);   /* fully opaque: nothing behind it shows through */
   border-bottom: 1px solid var(--border);
+}
+
+/* left-anchored, out of the flex flow so it doesn't disturb the About/Projects links' own centring in the bar. A link home (to
+   About), but styled as the name, not as one of the links: `.site-nav .site-nav-name` outranks the `.site-nav a` rules below. */
+.site-nav .site-nav-name {
+  position: absolute;
+  /* A fixed distance left of the bar's centre, like the centred links, so it keeps the same place relative to them at any
+     width: 412px is where the about box's left edge sits (its 900px column's 50px padding, less the ~12px the board's chip
+     reaches past the text). Only on a window too narrow for that does it stop 16px from the edge instead of going off it.
+     (The offset is from the bar's own edge, not inside its flex padding.) */
+  left: max(16px, calc(50% - 412px));
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;   /* brighter than --text-bright, which the links only reach on hover/active */
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.site-nav .site-nav-name:hover,
+.site-nav .site-nav-name:focus-visible {
+  color: #fff;
+}
+
+/* phones: three links centred would run into the name, so they sit against the bar's right edge instead */
+@media (max-width: 600px) {
+  .site-nav {
+    justify-content: flex-end;
+  }
+}
+
+/* small phones: a step down, or the centred links come within a few px of the name */
+@media (max-width: 380px) {
+  .site-nav .site-nav-name {
+    font-size: 16px;
+  }
+}
+
+/* the smallest phones: the centred links reach in far enough to touch the name at full size */
+@media (max-width: 360px) {
+  .site-nav {
+    gap: 12px;
+  }
+
+  .site-nav .site-nav-name {
+    left: 12px;
+    font-size: 14px;
+  }
 }
 
 .site-nav a {

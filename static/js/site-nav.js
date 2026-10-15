@@ -1,14 +1,8 @@
-// Site navigation bar: marks the link for the section in view, and keeps the placeholder links from jumping the
-// page to the top when clicked (an href of "#" would). Same-page anchor links (#about, #projects, and anything
-// else on the page like the "robotics" mention in the about text) jump instantly rather than via the page's own
-// smooth scroll-behavior -- see below.
+// Site navigation bar: same-page anchor links jump instantly rather than via the page's own smooth scroll-behavior --
+// see below. About and Projects are separate pages, so the current one is marked in each page's own HTML (is-active).
 (() => {
   const nav = document.querySelector('.site-nav');
   if (!nav) return;
-
-  nav.querySelectorAll('[data-filler]').forEach((a) => {
-    a.addEventListener('click', (e) => e.preventDefault());
-  });
 
   // pcb-board.js corrects the scroll position on every 'scroll' event to track its own progress along the board's
   // cables, and that correction is deliberately instant (see steer() there -- an animated one lets the real scroll
@@ -28,23 +22,4 @@
       history.pushState(null, '', '#' + id);
     });
   });
-
-  const about = nav.querySelector('[data-nav="about"]');
-  const projects = nav.querySelector('[data-nav="projects"]');
-  const target = document.getElementById('projects');
-  if (!about || !projects || !target) return;
-
-  let frame = null;
-  function update() {
-    frame = null;
-    // "Projects" becomes current once its heading has come up into the top part of the window
-    const inProjects = target.getBoundingClientRect().top < window.innerHeight * 0.5;
-    projects.classList.toggle('is-active', inProjects);
-    about.classList.toggle('is-active', !inProjects);
-  }
-  const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule, { passive: true });
-  update();
 })();

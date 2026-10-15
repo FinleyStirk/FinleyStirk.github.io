@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <!-- The site's own stylesheet: colours, fonts, nav bar. This page's styles below build on its variables. -->
-<link rel="stylesheet" href="/static/css/style.css?v=27" />
+<link rel="stylesheet" href="/static/css/style.css?v=48" />
 <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
 <style>
   /* Colours, font and nav bar come from the site's style.css (--bg, --text, --text-bright, --accent, ...). */
@@ -31,9 +31,11 @@
   body { background-color: #000; }  /* black page round the picture */
   /* The nav bar's name links home here (on the main page it's plain text). */
   /* (Self-contained, so it doesn't rely on the site stylesheet having a .site-nav-name rule.) */
-  .site-nav a.site-nav-name { position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-                              color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.6px;
-                              border-bottom: 0; padding: 0 0 0 16px; }
+  .site-nav a.site-nav-name { position: absolute; left: max(16px, calc(50% - 412px)); top: 50%; transform: translateY(-50%);
+                              color: #fff; font-size: 18px; font-weight: 600; letter-spacing: 0.6px;
+                              border-bottom: 0; padding: 0; }
+  @media (max-width: 380px) { .site-nav a.site-nav-name { font-size: 16px; } }
+  @media (max-width: 360px) { .site-nav a.site-nav-name { left: 12px; font-size: 14px; } }
   /* The scrubbed section: tall track, sticky canvas inside it. Track height
      sets how much scrolling the whole sequence takes. */
   .track { position: relative; height: 400vh; }
@@ -128,8 +130,8 @@
 <body>
   <nav class="site-nav" aria-label="Main">
     <a class="site-nav-name" href="/">Finley Stirk</a>
-    <a href="/#about">About</a>
-    <a href="/#projects">Projects</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
   </nav>
   <div class="loading" id="loading">Loading…</div>
 

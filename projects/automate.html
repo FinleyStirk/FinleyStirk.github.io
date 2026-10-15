@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automate</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=48" />
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
+</head>
+<body>
+
+<div class="post-container">
+
+        <div class="post-header">
+            <h1>Automate</h1>
+        </div>
+
+        <div class="post-content">
+
+  <div class="post-image post-image--wide">
+    <video
+      src="/static/media/projects/chess_robot/fools_mate2.mp4"
+      poster="/static/media/projects/chess_robot/fools_mate2_poster.webp"
+      autoplay
+      muted
+      loop
+      playsinline
+    ></video>
+  </div>
+
+  <h2>Introduction</h2>
+
+  <p>
+    Starting in Lower 6th form at the age of 16 my friend Joe and I decided to undertake the task of building a chess robot. With Joe's strong background in design engineering and my ability to write the code we decided this would be the perfect project to collaborate on. "How hard could it be?" the duo naively thought, with no knowledge of the hundreds of hours of work, the all nighters testing and debugging and the countless redesigns that lay ahead of them. However, they also didn't know the skills they would develop, competitions they would win and the passion for building they would both discover over the 3 years they worked on the project.
+  </p>
+
+  <!-- TODO: A brief overview of the board design -->
+
+  <h2>How to build a chess robot</h2>
+
+  <p>
+    As the software engineer of the duo I was tasked with writing the code for the robot which involved both the backend logic of handling the chess, as well as the low level microcontroller which directly controlled the motors, timers and sensors of the board. If you are more interested in the design aspect of the robot I'd recommend reading Joe's description of the project on his website (I'll link to that when he gets round to writing it!). The problem can best be described by 3 parts:
+  </p>
+
+  <ol>
+    <li>Moving the robot around.</li>
+    <li>Sensing opponents' moves.</li>
+    <li>Calculating where to move the pieces.</li>
+  </ol>
+
+  <h2>Moving the robot around</h2>
+
+  <p>
+    The robot uses a custom built
+    <a href="https://corexy.com/" target="_blank" rel="noopener noreferrer">CoreXY</a>
+    system which uses two fixed motors to give the carriage full translational freedom within a 2D plane. To move the pieces through the board, each piece has a magnet embedded in its base, which becomes attracted to the carriage when the servo motor rotates.
+  </p>
+
+  <h2>Piece detection</h2>
+
+  <p>
+    Underneath each square on the chess board is a hall effect sensor. This allows us to detect the magnet in the base of a piece and by constantly scanning the board we can identify what move is being played.
+  </p>
+
+  <div class="post-image post-image--wide">
+    <video
+      src="/static/media/projects/chess_robot/piece_detection.mp4"
+      poster="/static/media/projects/chess_robot/piece_detection_poster.webp"
+      autoplay
+      muted
+      loop
+      playsinline
+    ></video>
+  </div>
+
+</div>
+</div>
+  <script src="/static/js/cursor-glow.js?v=2" defer></script>
+</body>
+</html>
