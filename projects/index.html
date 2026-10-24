@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects | Finley Stirk</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=48" />
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
   <link rel="stylesheet" href="/static/css/pcb-board.css?v=34" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
   <!-- The background board's page-specific setup (read by pcb-board.js). PCB_LINKS: the cables drawn between page elements, one per
        line, [from, to, width in wires (optional)] -- anything not listed is not joined. Scroll no longer needs to be stretched to
        match a zigzagging cable's length: the chain-steering system (see pcb-scroll.js) drives scroll position directly off progress
@@ -23,6 +23,9 @@
     window.PCB_LINKS = [
       ['.project-grid > :nth-child(1)', '.project-grid > :nth-child(2)'],
       ['.project-grid > :nth-child(2)', '.project-grid > :nth-child(3)'],
+      ['.project-grid > :nth-child(3)', '.project-grid > :nth-child(4)'],
+      ['.project-grid > :nth-child(4)', '.project-grid > :nth-child(5)'],
+      ['.project-grid > :nth-child(5)', '.project-grid > :nth-child(6)'],
     ];
     // PCB_SHARE_CHARGE: false -- a card is powered only while the scroll light is in it, never by a neighbouring card along a cable.
     window.PCB_SHARE_CHARGE = false;
@@ -32,6 +35,9 @@
     // Only in the two-column layout (the same breakpoint as style.css); stacked cards scroll straight through.
     window.PCB_HOLD = () => (window.matchMedia('(min-width: 900px)').matches ? 400 : 0);
     window.PCB_SECTIONS = [];   // nothing fires on load: the scroll light starts in the first card
+    // PCB_START_AT_TURN: open with the light (and the page) where the first cable starts running sideways, so the first scroll moves it
+    // right -- and never scroll higher than that.
+    window.PCB_START_AT_TURN = true;
     // Everything that reveals starts invisible (before first paint, so nothing flashes). If the board script never runs, show it after 4s.
     (function () {
       var sel = [];
@@ -51,6 +57,7 @@
     <a class="site-nav-name" href="/">Finley Stirk</a>
     <a href="/">About</a>
     <a href="/projects/" class="is-active" aria-current="page">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
   </nav>
 
   <div class="project-grid">
@@ -117,8 +124,8 @@
       <div class="project-card-media">
         <video
           class="project-card-video project-card-video--stringart"
-          src="/static/media/string_art/audrey_navy_720.mp4"
-          poster="/static/media/string_art/blank_canvas_preview.png"
+          src="/static/media/projects/string_art/audrey_navy_720.mp4"
+          poster="/static/media/projects/string_art/blank_canvas_preview.png"
           muted
           loop
           playsinline
@@ -136,10 +143,28 @@
       </div>
     </a>
 
+    <!-- Coming soon: just a title for now (no link or video yet) -->
+    <div class="project-card project-card--empty">
+      <div class="project-card-text">
+        <h3>Unreal Analysis</h3>
+      </div>
+    </div>
+
+    <div class="project-card project-card--empty">
+      <div class="project-card-text">
+        <h3>Mention Markets</h3>
+      </div>
+    </div>
+
+    <div class="project-card project-card--empty">
+      <div class="project-card-text">
+        <h3>Haunted TypeWriter</h3>
+      </div>
+    </div>
 
     <!-- Autocamcribs — temporarily removed, keep for possible reinstatement
     <a href="https://devpost.com/software/auto-camcrib" class="project-card">
-      <img src="/static/images/projects/autocamcribs.jpeg" alt="Autocamcribs image">
+      <img src="/static/media/projects/autocamcribs/autocamcribs.jpeg" alt="Autocamcribs image">
       <div class="project-card-text">
         <h3>Autocamcribs</h3>
         <p>An AI study assistant which procedurally animates mathmatical explanation videos tailered to the users homework questions</p>
@@ -154,7 +179,7 @@
 
     <!-- Charvis — temporarily removed, keep for possible reinstatement
     <a href="https://devpost.com/software/charvis" class="project-card">
-      <img src="/static/images/projects/charvis.jpeg" alt="charvis image">
+      <img src="/static/media/projects/charvis/charvis.jpeg" alt="charvis image">
       <div class="project-card-text">
         <h3>Charvis</h3>
         <p>An AR pair of glasses which uses computer vision and machine learning to draw arrows showing the best move in a game of chess</p>
@@ -162,11 +187,37 @@
     </a>
     -->
   </div>
+  <!-- PCB_START_AT_TURN, before the first paint: the board (which knows exactly where the first cable turns) takes a second or two to
+       build, so scroll to where it will put the page NOW, or the page visibly jumps there later. With the first two cards side by
+       side, the cable leaves the first card from the exact middle of its side (see pcb-gen.js), so that point is the card's centre;
+       centred in the space below the nav bar as pcb-scroll.js does. Redone once fonts arrive, unless the reader has scrolled since.
+       Only where pcb-scroll.js steers (not touch, not reduced motion); PCB_PRESCROLLED tells it the page is still at its start. -->
+  <script>
+    (function () {
+      if (!window.PCB_START_AT_TURN || window.scrollY > 0 || matchMedia('(pointer: coarse)').matches
+        || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      function place() {
+        var cards = document.querySelectorAll('.project-grid > .project-card');
+        if (cards.length < 2) return;
+        var a = cards[0].getBoundingClientRect(), b = cards[1].getBoundingClientRect();
+        if (Math.max(a.top, b.top) >= Math.min(a.bottom, b.bottom) || b.left < a.right) return;   // not side by side
+        var nav = document.querySelector('.site-nav'), top = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0;
+        var y = window.scrollY + (a.top + a.bottom) / 2 - (top + (window.innerHeight - top) / 2);
+        y = Math.max(0, Math.min(document.documentElement.scrollHeight - window.innerHeight, y));
+        window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+        window.PCB_PRESCROLLED = window.scrollY;
+      }
+      place();
+      if (document.fonts) document.fonts.ready.then(function () {
+        if (window.PCB_PRESCROLLED != null && Math.abs(window.scrollY - window.PCB_PRESCROLLED) < 1) place();
+      });
+    })();
+  </script>
   <script src="/static/js/cursor-glow.js?v=5" defer></script>
   <script src="/static/js/site-nav.js?v=4" defer></script>
   <script src="/static/js/center-video.js?v=8" defer></script>
   <script src="/static/js/pcb-gen.js?v=6" defer></script>
-  <script src="/static/js/pcb-scroll.js?v=13" defer></script>
+  <script src="/static/js/pcb-scroll.js?v=16" defer></script>
   <script src="/static/js/pcb-board.js?v=239" defer></script>
 
 </body>

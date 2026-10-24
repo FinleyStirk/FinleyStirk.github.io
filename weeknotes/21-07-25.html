@@ -4,13 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finley - Weeknote 21/07/25</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
 </head>
-<body>
+<body class="weeknote-page">
+  <!-- Site navigation: a thin bar fixed to the top of the window (same as every other page). No item is marked active on a single note. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
+  </nav>
 
   <main class="post-container">
     
@@ -24,7 +31,7 @@
       </p>
 
       <figure class="post-image">
-        <img src="/static/images/weeknotes/21_07_25/printed_everest.png" alt="Mount Everest Print">
+        <img src="/static/media/weeknotes/21-07-25/printed_everest.png" alt="Mount Everest Print">
       </figure>
 
       <p>
@@ -32,7 +39,7 @@
       </p>
 
       <figure class="post-image">
-        <img src="/static/images/weeknotes/21_07_25/liechtenstein.png" alt="Liechtenstein Mesh">
+        <img src="/static/media/weeknotes/21-07-25/liechtenstein.png" alt="Liechtenstein Mesh">
       </figure>
 
       <p>
@@ -40,7 +47,7 @@
       </p>
 
       <figure class="post-image">
-        <img src="/static/images/weeknotes/21_07_25/world_mesh.png" alt="World Mesh">
+        <img src="/static/media/weeknotes/21-07-25/world_mesh.png" alt="World Mesh">
       </figure>
 
       <p>
@@ -48,12 +55,13 @@
       </p>
 
       <figure class="post-image">
-        <img src="/static/images/weeknotes/21_07_25/london_mesh.png" alt="London Mesh">
+        <img src="/static/media/weeknotes/21-07-25/london_mesh.png" alt="London Mesh">
       </figure>
     </article>
 
   </main>
 
   <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
 </body>
 </html>

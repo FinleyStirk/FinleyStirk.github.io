@@ -213,7 +213,14 @@ window.PCBScroll = (B) => {
   // an activated element under it charges up; and the current point of chain PROGRESS is a LINE OF POWER (see solveField), lighting
   // the cable it's on by the same exponential falloff as any other power.
   // The line only sets off the sections (see above), once each -- it doesn't pulse the elements it passes over.
-  const lineY = () => window.scrollY + window.innerHeight / 2;
+  // The middle of the part of the window the page shows in: below the fixed nav bar, so a component centred on it has equal gaps
+  // to the nav bar above and the bottom of the window below (the middle of the whole window would sit it nav-height too high).
+  const viewMid = () => {
+    const nav = document.querySelector('.site-nav');
+    const top = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0;
+    return top + (window.innerHeight - top) / 2;
+  };
+  const lineY = () => window.scrollY + viewMid();
   // Not a plain flag: the exact scrollY we last corrected TO, so an incoming 'scroll' event can be checked against it rather
   // than just trusted. A correction's own 'scroll' event doesn't necessarily fire before the next one is issued (they can
   // coalesce, or something else can scroll the page in between) -- a boolean would absorb whichever scroll event happened to
@@ -227,17 +234,18 @@ window.PCBScroll = (B) => {
   function steer(delta) {
     if (chainFor !== B.geoVersion) buildChain();
     if (!LINE.chainSteer || !chain || !chain.length) return false;
-    const prospective = chainProgress + delta;
+    // never back past the start (PCB_START_AT_TURN): held there, the scroll swallowed, rather than handed to the page to scroll up
+    const prospective = minProgress > 0 ? Math.max(minProgress, chainProgress + delta) : chainProgress + delta;
     if (prospective < 0 || prospective > chainTotal) return false;   // past either end of the chain: hand scrolling back to the page, rather than freezing at the last point it covers
     const pt = chainPointAt(prospective);
-    if (!pt || Math.abs(window.scrollY + window.innerHeight / 2 - pt.y) >= window.innerHeight) return false;   // nowhere near it
+    if (!pt || Math.abs(lineY() - pt.y) >= window.innerHeight) return false;   // nowhere near it
     chainProgress = prospective;
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     // Not rounded to a whole pixel: a trackpad's own wheel deltas are fine, sub-pixel fractions (that's what makes native
     // scrolling feel smooth), and snapping our correction to the nearest integer pixel throws that away -- several ticks in
     // a row can round to the exact same target and produce no visible motion at all, then suddenly jump 1px once the
     // accumulated fraction crosses a whole pixel, which reads as rough, stair-stepped scrolling instead of a smooth glide.
-    const target = Math.max(0, Math.min(maxY, pt.y - window.innerHeight / 2));
+    const target = Math.max(minScrollY, Math.min(maxY, pt.y - viewMid()));
     if (Math.abs(target - window.scrollY) > 0.1) { correctingTarget = target; window.scrollTo({ top: target, left: 0, behavior: 'instant' }); }   // instant: the page's own CSS sets scroll-behavior:smooth, which would otherwise animate every correction and let the real scroll position fall further and further behind chainProgress
     return true;
   }
@@ -259,6 +267,11 @@ window.PCBScroll = (B) => {
       correctingTarget = null; pwLastRawY = window.scrollY; checkScrollSections(lineY()); ensureRegion(); requestFrame(); return;
     }
     correctingTarget = null;   // whatever this scroll is, it didn't land where our last correction expected -- treat it as fresh
+    if (window.scrollY < minScrollY - 0.5) {   // scrolled above the start (scrollbar, keyboard, ...): put it back, at the start
+      chainProgress = minProgress; correctingTarget = minScrollY; pwLastRawY = minScrollY;
+      window.scrollTo({ top: minScrollY, left: 0, behavior: 'instant' });
+      checkScrollSections(lineY()); ensureRegion(); requestFrame(); return;
+    }
     const rawY = window.scrollY, delta = rawY - pwLastRawY;
     pwLastRawY = rawY;
     // a no-op if nowhere near the chain -- the fallback for scrolling a 'wheel' listener never sees, but also a big jump
@@ -281,9 +294,31 @@ window.PCBScroll = (B) => {
     const place = firstBuild ? null : chainPlace();
     buildChain();
     if (place && chain.length === place.n) chainProgress = chain[place.i].cumStart + place.frac * chain[place.i].len;
-    else chainProgress = (firstBuild && window.scrollY < 50) ? 0 : chainProgressForY(window.scrollY + window.innerHeight / 2);
+    else chainProgress = chainProgressForY(lineY());
+    // a fresh page: still at the top, or still where the page's own early placement put it (see PCB_PRESCROLLED in projects/index.html)
+    const fresh = window.scrollY < 50 || (window.PCB_PRESCROLLED != null && Math.abs(window.scrollY - window.PCB_PRESCROLLED) < 1);
+    startAtTurn(firstBuild && fresh);
     pwLastRawY = window.scrollY;
     for (const sec of SECTIONS) if (sec.state === 'running') { sec.state = 'idle'; fireSection(sec); }   // the rebuild cleared its pulse
+  }
+  // window.PCB_START_AT_TURN (set in the page): the light starts where the first cable starts running sideways -- while still beside
+  // the first component, not after it has left it heading down (a one-column layout) -- with the page scrolled to match, so the very
+  // first scroll moves it along that sideways run instead of first carrying it down through the component. That point is also as
+  // high as the page goes: minProgress / minScrollY, re-found at every board build (0 when off, on touch, or there's no such turn).
+  let minProgress = 0, minScrollY = 0;
+  function startAtTurn(moveThere) {
+    minProgress = 0; minScrollY = 0;
+    if (!window.PCB_START_AT_TURN || coarsePointer || mm.matches || !LINE.chainSteer || !chain) { if (moveThere) chainProgress = 0; return; }
+    const seg = chain.find((c) => !c.bridge);
+    const first = seg && B.geometry.nodes[seg.cable.from];
+    const i = seg ? seg.pts.findIndex((p, k) => k > 0 && Math.abs(p.x - seg.pts[k - 1].x) > Math.abs(p.y - seg.pts[k - 1].y)) : -1;
+    if (i < 1 || seg.pts[i - 1].y > first.y + first.h) { if (moveThere) chainProgress = 0; return; }
+    const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    minProgress = seg.cumStart + seg.cum[i - 1];
+    minScrollY = Math.max(0, Math.min(maxY, seg.pts[i - 1].y - viewMid()));
+    if (moveThere || chainProgress < minProgress) chainProgress = minProgress;
+    const target = moveThere ? minScrollY : Math.max(minScrollY, window.scrollY);
+    if (Math.abs(target - window.scrollY) > 0.1) { correctingTarget = target; window.scrollTo({ top: target, left: 0, behavior: 'instant' }); }
   }
   // where the light is, in terms that survive a rebuild: which chain segment it's on (of n), and how far along it (0..1)
   function chainPlace() {

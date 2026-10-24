@@ -1,8 +1,8 @@
 :root {
   --bg: #161616;
   --bg-alt: #202020;
-  --text: #b8b8b8;
-  --text-muted: #8c8c8c;
+  --text: #cfcfcf;         /* ~11.5:1 on --bg: brighter for long reading, short of pure white's glare */
+  --text-muted: #a0a0a0;   /* ~7:1 on --bg, still ~4.6:1 on the board's #333 chip bodies */
   --text-bright: #f4f4f4;
   --text-h2: #e2e2e2;
   --border: rgba(255, 255, 255, 0.15);
@@ -163,6 +163,12 @@ body::after {
   text-decoration: none;
   color: inherit;
   border: 1px solid transparent;
+}
+
+/* A card that's only a title for now: given some height of its own, so on its own in a row it still reads as a card rather
+   than a thin strip (next to a full card, the row's stretch makes it as tall as its neighbour anyway). */
+.project-card--empty {
+  min-height: 280px;
 }
 
 /* Reserves a card-sized, invisible row in the grid — same footprint as
@@ -432,6 +438,71 @@ a.project-card-tag--gold:hover {
 
 /* --- Weeknotes Page Styles --- */
 
+/* The weeknotes index: every note listed in ONE box, centred, one line each (title left, date right), so the board treats the
+   whole list as a single component, like the About box. Body padding clears the fixed nav, as on .projects-page. */
+.weeknotes-page {
+  padding-top: 50px;
+}
+
+.weeknote-index {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.weeknote-box {
+  position: relative;
+  z-index: 0;
+  box-sizing: border-box;
+  width: min(100%, 900px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 32px 40px;
+}
+
+/* glow-blocking panel behind the box: exactly the box's own size with a hard edge -- no faded margin past it (that read as a
+   dark drop shadow), so the board's wires run right up to the box */
+.weeknote-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: scroll;
+}
+
+.weeknote-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.weeknote-entry h3 {
+  font-size: clamp(18px, 1.6vw, 22px);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+}
+
+.weeknote-entry .wn-date {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.weeknote-entry:hover h3 {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
 .weeknotes-container {
   max-width: 900px;
   margin: 40px auto;
@@ -508,6 +579,11 @@ a.project-card-tag--gold:hover {
   max-width: 700px;
   margin: 40px auto;
   padding: 0 20px 60px 20px;
+}
+
+/* a single weeknote: clears the fixed 40px nav bar (padding on the body, as on .projects-page) */
+.weeknote-page {
+  padding-top: 50px;
 }
 
 .post-header {
@@ -608,6 +684,13 @@ a.project-card-tag--gold:hover {
 
 .post-content li {
   margin-bottom: 8px;
+}
+
+/* Long-form body copy (weeknotes, blog posts, project write-ups) is set in Inter, a plain reading face: Space Grotesk's quirky
+   letterforms suit headings and UI but tire the eye over paragraphs, and it has no true italic. Headings stay in Space Grotesk. */
+.post-content p,
+.post-content li {
+  font-family: 'Inter', 'Space Grotesk', Arial, sans-serif;
 }
 
 .post-code-block {

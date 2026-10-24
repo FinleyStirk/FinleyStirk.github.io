@@ -3,47 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Finley - Weeknotes</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Weeknotes | Finley Stirk</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
+  <link rel="stylesheet" href="/static/css/pcb-board.css?v=34" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/static/images/favicon_f.png">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
+  <!-- The background board's page-specific setup (read by pcb-board.js; see projects/index.html for what each knob does).
+       Like the About page: the whole list is one component, lit as soon as the page loads and powered for good. -->
+  <script>
+    window.PCB_LINKS = [];
+    window.PCB_POWERED = [
+      { el: '.weeknote-box', decayLength: 30 },
+    ];
+    window.PCB_SECTIONS = [
+      { name: 'weeknotes', start: '.weeknote-box', trigger: 'load', reveal: [] },
+    ];
+  </script>
 </head>
-<body>
-  
-  <main class="weeknotes-container">
-    <h1>Finley Stirk - Weeknotes</h1>
-    
-    <div class="weeknote-list">
-      <a href="05-09-25.html" class="weeknote-link">
+<body class="weeknotes-page">
+  <!-- Plain <a>s (no <ul>/<li>) on purpose: the PCB background treats list items as components. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/" class="is-active" aria-current="page">Weeknotes</a>
+  </nav>
+
+  <!-- Newest first. data-pcb: the board treats the whole box as one component (the entries inside it aren't components of their own). -->
+  <main class="weeknote-index">
+    <div class="weeknote-box" data-pcb>
+      <a href="24-10-26.html" class="weeknote-entry">
+        <h3>Starting My Dissertation</h3>
+        <span class="wn-date">24 Oct 2026</span>
+      </a>
+
+      <a href="05-09-25.html" class="weeknote-entry">
+        <h3>Finishing and publishing Topogmesh</h3>
         <span class="wn-date">05 Sep 2025</span>
-        <span class="wn-title">Finishing and publishing Topogmesh</span>
       </a>
 
-      <a href="03-08-25.html" class="weeknote-link">
+      <a href="03-08-25.html" class="weeknote-entry">
+        <h3>Incorporating OSM data</h3>
         <span class="wn-date">03 Aug 2025</span>
-        <span class="wn-title">Incorperating OSM data</span>
       </a>
 
-      <a href="21-07-25.html" class="weeknote-link">
+      <a href="21-07-25.html" class="weeknote-entry">
+        <h3>Modelling at arbitrary scales</h3>
         <span class="wn-date">21 Jul 2025</span>
-        <span class="wn-title">Moddelling at arbitrary scales</span>
       </a>
 
-      <a href="14-07-25.html" class="weeknote-link">
+      <a href="14-07-25.html" class="weeknote-entry">
+        <h3>First terrain prints</h3>
         <span class="wn-date">14 Jul 2025</span>
-        <span class="wn-title">First terrain prints</span>
       </a>
 
-      <a href="07-07-25.html" class="weeknote-link">
+      <a href="07-07-25.html" class="weeknote-entry">
+        <h3>Starting my UROP</h3>
         <span class="wn-date">07 Jul 2025</span>
-        <span class="wn-title">Starting my UROP</span>
       </a>
     </div>
-
   </main>
 
   <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+  <script src="/static/js/pcb-gen.js?v=6" defer></script>
+  <script src="/static/js/pcb-scroll.js?v=16" defer></script>
+  <script src="/static/js/pcb-board.js?v=239" defer></script>
 </body>
 </html>

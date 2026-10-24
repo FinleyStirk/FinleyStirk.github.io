@@ -7,13 +7,13 @@ python_pcb_test
 *.MOV
 
 # Media no page uses any more (old originals, replaced by smaller versions) -- kept locally, not committed
-/static/images/automate_logo.png
-/static/images/profile_picture.png
-/static/images/projects/automate.png
-/static/images/projects/chess_robot/wire_frame.jpeg
-/static/images/projects/chess_robot/wire_frame.png
-/static/images/projects/string_art/audrey.png
-/static/images/projects/string_art/audrey_circle.png
+/static/media/site/automate_logo.png
+/static/media/site/profile_picture.png
+/static/media/projects/chess_robot/automate.png
+/static/media/projects/chess_robot/wire_frame.jpeg
+/static/media/projects/chess_robot/wire_frame.png
+/static/media/projects/string_art/audrey.png
+/static/media/projects/string_art/audrey_circle.png
 /static/media/projects/chess_robot/fools_mate.mp4
 /static/media/projects/chess_robot/fools_mate2_poster.png
 /static/media/projects/chess_robot/fools_mate_poster.png
@@ -23,9 +23,9 @@ python_pcb_test
 /static/media/projects/topogmesh/rinjani_wireframe_flyover_poster.png
 /static/media/projects/topogmesh/wire_frame_mountain.png
 /static/media/projects/topogmesh/wire_frame_mountain_white.png
-/static/media/string_art/audrey.mp4
-/static/media/string_art/audrey_navy.mp4
-/static/media/string_art/audrey_navy_poster.png
+/static/media/projects/string_art/audrey.mp4
+/static/media/projects/string_art/audrey_navy.mp4
+/static/media/projects/string_art/audrey_navy_poster.png
 
 # Personal notes
 /about.txt
