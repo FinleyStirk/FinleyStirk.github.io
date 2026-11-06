@@ -29,3 +29,8 @@ python_pcb_test
 
 # Personal notes
 /about.txt
+notes.txt
+
+# Weeknote sources and the script that builds the pages from them -- kept locally, not committed
+/weeknotes/md/
+/weeknotes/build_weeknote.py

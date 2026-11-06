@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Finley Stirk's Weeknotes</title>
+  <link href="https://finleystirk.github.io/weeknotes/"/>
+  <link rel="self" href="https://finleystirk.github.io/weeknotes/feed.xml"/>
+  <id>https://finleystirk.github.io/weeknotes/</id>
+  <updated>2026-10-31T00:00:00Z</updated>
+  <author><name>Finley Stirk</name></author>
+  <entry>
+    <title>The New Forest</title>
+    <link href="https://finleystirk.github.io/weeknotes/31-10-26.html"/>
+    <id>https://finleystirk.github.io/weeknotes/31-10-26.html</id>
+    <updated>2026-10-31T00:00:00Z</updated>
+    <content type="html">&lt;h2&gt;Dissertation Progress&lt;/h2&gt;
+
+      &lt;p&gt;
+        After realising that, even if I deleted every file off my laptop, I still wouldn't be able to store the Tessera embeddings for the UK, I've decided to focus on a smaller area of analysis. The area I've chosen is the &lt;a href="https://en.wikipedia.org/wiki/New_Forest" target="_blank" rel="noopener noreferrer"&gt;New Forest&lt;/a&gt;. I first chose this area for its abundance of GBIF data (almost 6 million with position and uncertainty) and the fact it is a national park.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/31-10-26/uncertainty_maps.png" alt="new_forest_records"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        I had a quick scare in my weekly meeting with &lt;a href="https://digitalflapjack.com/" target="_blank" rel="noopener noreferrer"&gt;Michael&lt;/a&gt; as he very reasonably asked me if the New Forest would be a problem due to it being a massive forest, and thus lacking in habitat diversity... However luckily for me I went to check this with the habitat map he kindly provided and I saw that there is plenty of diversity in habitat types for this to be a valid area of investigation!
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/31-10-26/habitat_map.png" alt="new_forest_habitats"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        However with a new area of investigation I had to take a step back and do a similar evaluation to the one I did for Madagascar where I analysed the potential different causes for the uncertainty in the GBIF data. Firstly I found that the number of obscured datapoints was much lower (as you would expect compared to Madagascar due to fewer endangered species). In addition I found another source of systematic error in the data that wasn't present in Madagascar. After doing some investigation I plotted the coordinates of some of the most common uncertainty values and was surprised when I saw the following map.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/31-10-26/grid_uncertainties.png" alt="grid_uncertainties"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        What I was seeing here turned out to be a common practice in a lot of UK datasets such as the &lt;a href="https://ukbms.org/" target="_blank" rel="noopener noreferrer"&gt;UK Butterfly Monitoring Scheme (UKBMS)&lt;/a&gt; where records have their position and uncertainty based on &lt;a href="https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid" target="_blank" rel="noopener noreferrer"&gt;OS grid squares&lt;/a&gt;. This explained the various spikes at different uncertainty values, as their uncertainty was registered as the diagonal length of the square, which varied depending on what resolution the OS grid was set to.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/31-10-26/mechanism_breakdown.png" alt="mechanism_breakdown"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        As you can see the data is absolutely dominated by these grid squares with massive uncertainty, which is something I'm going to have to consider the significance of later, but for now I am not too concerned as even without them there are plenty of datapoints for me to use!
+      &lt;/p&gt;
+
+      &lt;h2&gt;Weeknotes Progress&lt;/h2&gt;
+
+      &lt;p&gt;
+        Unfortunately I have already fallen a bit behind with weeknotes (these should have come out 5 days ago). However, I thought it would be better late than never to upload them so here they are for last week. I should be back on track very soon as I've got plenty of work done and I just need to write it down, so my next weeknotes should be out in a few days. In addition I've finally got round to setting up an &lt;a href="https://finleystirk.github.io/weeknotes/feed.xml"&gt;Atom feed&lt;/a&gt; for my weeknotes!
+      &lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Starting My Dissertation</title>
+    <link href="https://finleystirk.github.io/weeknotes/24-10-26.html"/>
+    <id>https://finleystirk.github.io/weeknotes/24-10-26.html</id>
+    <updated>2026-10-24T00:00:00Z</updated>
+    <content type="html">&lt;h2&gt;Dissertation Outline&lt;/h2&gt;
+
+      &lt;p&gt;
+        This week was my first proper week working on my dissertation "Evaluating different techniques for creating habitat maps from noisy GBIF data and Tessera embeddings". The goal of my project is to use data from the &lt;a href="https://www.gbif.org/what-is-gbif" target="_blank" rel="noopener noreferrer"&gt;Global Biodiversity Information Facility&lt;/a&gt;, which is a massive open database combining species occurrence records across thousands of sources, as labels to train a classifier over different habitat types such as wetland, savanna, forest and others. If all the data from the GBIF were clean, this would be a fairly standard classification problem. The reason for my project's existence is that the problem is made more challenging by the fact that the GBIF's billions of records vary wildly in location accuracy and uncertainty. Therefore, a common approach is simply ignoring large portions of the data which have intolerable amounts of uncertainty. This is where the majority of my project's work will be done, as I plan on using uncertainty conscious methods to include a greater number of records and hopefully create more accurate habitat maps. The actual inputs I will use to train the classifier will be the &lt;a href="https://geotessera.org/" target="_blank" rel="noopener noreferrer"&gt;Tessera&lt;/a&gt; embeddings, which form a 10m resolution grid of the planet's entire land surface where each square encodes a year's worth of satellite data.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        I have to give a big thanks to &lt;a href="https://www.aneeshnaik.com/about.html" target="_blank" rel="noopener noreferrer"&gt;Dr Aneesh Naik&lt;/a&gt; who proposed this project and who has already been a huge help with laying out a roadmap of areas for me to explore. I also am lucky enough to have &lt;a href="https://digitalflapjack.com/" target="_blank" rel="noopener noreferrer"&gt;Dr Michael Winston Dales&lt;/a&gt; as my day-to-day supervisor and &lt;a href="https://anil.recoil.org/" target="_blank" rel="noopener noreferrer"&gt;Professor Anil Madhavapeddy&lt;/a&gt; as my marking supervisor, both of whom have already been so generous with giving up their time to provide ample resources and feedback.
+      &lt;/p&gt;
+
+      &lt;h2&gt;First steps&lt;/h2&gt;
+
+      &lt;p&gt;
+        With the project proposal finished, I can finally start diving into the project. A natural starting point is to actually have a look at the data I have to investigate. For the sake of getting off the ground I chose Madagascar as an area to investigate as it has roughly 3.8 million records which is far more manageable compared to the UK with more than 266 million records. The first thing I noticed when viewing the data, was how few records actually contained both a location and an uncertainty, with only 6.6% having both. The next thing I did, inspired by Michael's plots, was to create a few maps showing off the density of records across the country to give a rough indication of the sampling bias as well as the different bands in uncertainty I was seeing.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/24-10-26/madagascar_uncertainty.png" alt="Madagascar_maps"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        As you can see there is a significant group of records with uncertainty above 1000m, which reinforces the need for classification methods which can make sense of this. You can also clearly see from the maps how records are naturally clustered around where the cities and national parks are and fall off massively in more rural areas. This is by no means a groundbreaking observation but it is something I will need to consider when generating synthetic data later. To get a better look at the uncertainty spread, the next thing I did was to plot a bar chart of uncertainty bins.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/24-10-26/uncertainty_bars.png" alt="uncertainty_plots"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The two spikes at both ends are what stand out the most here. Looking into the leftmost spike showed 9907 records with sub-metre precision. This is clearly a red flag as these turned out to all come from marine surveys so I've deemed it appropriate to ignore these as this is false precision. The second spike (the one on the right with the uncertainty range from 30000-31200m) is more interesting and required a bit more digging. I realised that the uncertainty follows latitude almost perfectly which implied there was some kind of systematic location based mechanism going on here.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/24-10-26/uncertainty_latitude_plot.png" alt="uncertainty_vs_latitude"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        It turns out this uncertainty comes from iNaturalist's automatic &lt;a href="https://help.inaturalist.org/en/support/solutions/articles/151000169938" target="_blank" rel="noopener noreferrer"&gt;geoprivacy algorithm&lt;/a&gt;. How it works is they randomise the position in a 0.2° x 0.2° cell to obscure the true location of the occurrence. Looking at the data, the uncertainty lines up almost exactly with the diagonal length of each cell. Therefore the curvature of the Earth explains why uncertainty is correlated with latitude! The geoprivacy feature is designed to obscure the location of endangered species but throws a bit of a wrench in my classification. However I still think this data can be used but once again I will have to consider it in the distribution I make for the synthetic data.
+      &lt;/p&gt;
+
+      &lt;h2&gt;Why Weeknotes?&lt;/h2&gt;
+
+      &lt;p&gt;
+        I feel like I should describe why I felt the need to start writing weeknotes but their purpose has already been explained well by my director of studies &lt;a href="https://www.jonmsterling.com/" target="_blank" rel="noopener noreferrer"&gt;Professor Jon Sterling&lt;/a&gt; in his post &lt;a href="https://www.jonmsterling.com/01JS/" target="_blank" rel="noopener noreferrer"&gt;"Write first, then meet"&lt;/a&gt;. For me especially, I've realised that throughout the course of the CS Tripos, my prose writing muscles have slowly atrophied from lack of use. I feel like the ability to write is a useful skill which I don't want to fully lose as I get older so I'm going to try and stay as consistent as I can! Also I plan on setting this up with an Atom feed in the future so stay tuned for that!
+      &lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Finishing and publishing Topogmesh</title>
+    <link href="https://finleystirk.github.io/weeknotes/05-09-25.html"/>
+    <id>https://finleystirk.github.io/weeknotes/05-09-25.html</id>
+    <updated>2025-09-05T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;
+        This was my last week working on topogmesh and I wanted to conclude my weeknotes with an overview of the project itself and some things someone who is interested could do with the code. Topogmesh now supports the use of OSM data for any Raster on earth to add colours and details to terrain models which fixes my problem from weeks ago about accurate data for rivers and other natural sources of water. This can also be applied to any of the other features within the OSM database (such as forests) which has allowed for this print of the Crater Lake within &lt;a href="https://en.wikipedia.org/wiki/Mount_Rinjani" target="_blank" rel="noopener noreferrer"&gt;Mount Rinjani&lt;/a&gt;.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/05-09-25/mount_rinjani.png" alt="Mount Rinjani print"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        Thanks again to Michael for printing this for me as its size and use of different colours caused the print to take over 10 hours and had to be printed twice due to a printing error. Another print Michael was able to do using topogmesh, was this detailed model of the area surrounding the Liverpool Central Library. This is a good showcase of how detailed the &lt;a href="https://environment.data.gov.uk/survey" target="_blank" rel="noopener noreferrer"&gt;government lidar data&lt;/a&gt; is and what topogmesh can do with it when combined with OSM data.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/05-09-25/liverpool_print.png" alt="Liverpool Central Library"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        This print reminded me of a display at the &lt;a href="https://thelondoncentre.org/exhibitions" target="_blank" rel="noopener noreferrer"&gt;London Centre&lt;/a&gt;, which shows a 16.5 metre long 1:2000 scale 3D model of London. However, unlike the exhibition (which is manually updated by developers and architects), topogmesh is entirely procedural and allows you to create models of anywhere in England using entirely open-source government LIDAR data. I recently added a tool to topogmesh to make this process even easier, where you just need to specify the area you want and it will automatically download the most recent data for that region.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        So what could people do with the project? Here's a non-exhaustive list of some of my ideas and ideas I've heard from others. All of these aim to make use of how powerful having a 3D physical object is for visualising data and communicating abstract ideas:
+      &lt;/p&gt;
+
+      &lt;ul&gt;
+        &lt;li&gt;Having a 3D map for hiking trails on less commonly traversed mountain ranges&lt;/li&gt;
+        &lt;li&gt;Creating visual aids to show the recession of glaciers (creating different models for what they looked like at different points in recent history)&lt;/li&gt;
+        &lt;li&gt;A science communication tool for other effects humans have on the environment (showing the extent of deforestation and what effects rising sea levels will have on major cities)&lt;/li&gt;
+        &lt;li&gt;Creating city models for urban planners showing the relative scale of different parts of a city&lt;/li&gt;
+        &lt;li&gt;Showing what the terrain is like beneath buildings to help Architects and Civil Engineers&lt;/li&gt;
+        &lt;li&gt;Demonstrating the dangers of flooding on specific regions based on the shape of terrain beneath it&lt;/li&gt;
+      &lt;/ul&gt;
+
+      &lt;p&gt;
+        If you want to try out the code, it is all open source and available here on &lt;a href="https://github.com/quantifyearth/topogmesh" target="_blank" rel="noopener noreferrer"&gt;github&lt;/a&gt;.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        Finally I want to say a big thank you to Michael for supervising me on this project and helping me along the way with some very insightful ideas. Another thank you I want to give, is to Anil, for running this UROP and giving me this opportunity. I've really enjoyed working on topogmesh and I hope some people check it out!
+      &lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Incorporating OSM data</title>
+    <link href="https://finleystirk.github.io/weeknotes/03-08-25.html"/>
+    <id>https://finleystirk.github.io/weeknotes/03-08-25.html</id>
+    <updated>2025-08-03T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;
+        These last two weeks I've finally managed to get some code uploaded on PyPI and available for anyone to download and try out. If you do want to try it out, you can find out more information on the &lt;a href="https://github.com/quantifyearth/topogmesh" target="_blank" rel="noopener noreferrer"&gt;github page&lt;/a&gt;. If you run into any problems with the code feel free to add an issue to the github page and I will try to address it as soon as I possibly can. As this is just the first release I've tried to make it reasonably stable and only include the core functionalities of generating terrain for either entire .tif files or for a particular area specified by a .geojson file. In the future I plan on incorporating my more recent code so keep an ear out if you are interested in this project!
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        After a week of getting the code into a workable state for publishing, I was finally ready to go back to focusing on high resolution models of cities. To begin with I wanted a way to filter out some of the trees from the dataset as in their current form, they appear as noise and made it hard to distinguish between buildings and roads.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/03-08-25/tree_noise.png" alt="Noise from trees"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The workaround for this was to use the &lt;a href="https://environment.data.gov.uk/survey" target="_blank" rel="noopener noreferrer"&gt;government environmental data&lt;/a&gt;, which provides a height map of vegetation only, and subtract that from the original terrain to get a much cleaner looking model. This allowed me to get my first highly detailed print. I've learnt that it’s better to focus on a smaller area, as I think this print was a bit too ambitious (a friend had to ask me if it was a bombed city!).
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/03-08-25/first_city.png" alt="First city print"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        On Monday 3rd, I had a meeting with Andrés Camilo Zúñiga González, who gave me some great ideas of how I could potentially apply some of the visualisations I'm working on to an active piece of research which he is doing on the impacts of urban vegetation on healthy cities. He talked about how he has been using OSM (OpenStreetMaps), which inspired me to incorporate the same dataset into my city visualisation code. Trying to set this up was a challenge due to having to convert back and forth between different global projections, and like everything to do with mesh generation, it created some sureal looking errors.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/03-08-25/nightmare_terrain.png" alt="Weird looking mesh error"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        However after a while of bug fixing, I managed to get the data integrated and I'm finally able to do some detailed colour mapping. Due to the tag system OSM uses when querying their data, it is incredibly easy for me to assign colours to regions, ranging from accurately mapping river shapes to highlighting hospital buildings to make them stand out more in a print. This will allow for far more flexability for visualising cities and I'm looking to try do a multi-coloured print next week.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/03-08-25/coloured_city.png" alt="Coloured London"&gt;
+      &lt;/figure&gt;</content>
+  </entry>
+  <entry>
+    <title>Modelling at arbitrary scales</title>
+    <link href="https://finleystirk.github.io/weeknotes/21-07-25.html"/>
+    <id>https://finleystirk.github.io/weeknotes/21-07-25.html</id>
+    <updated>2025-07-21T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;
+        I started off this week with my first print on the department 3D printers. Michael and I wanted to see how the files from the previous week would look when physically printed, so we tested it on a highly scaled down version of Mount Everest. This is what the result looked like after about 40 minutes of printing followed by a quick cleanup of the various wispy tendrils. I am overall very happy with how it looks; however, I think it will look even better and more detailed when we start doing larger prints in the future.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/21-07-25/printed_everest.png" alt="Mount Everest Print"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        This demonstrated that at a scale roughly the size of a mountain, the code performed well. The problem, however, was that on smaller scales you could barely see any detail at all and when attempting to generate the terrain for an entire country the code would simply crash or if I was lucky, I would be sat waiting for hours (unless it were somewhere tiny like Liechtenstein!).
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/21-07-25/liechtenstein.png" alt="Liechtenstein Mesh"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The problem was that even after hours of waiting, the output would still be rather lacklustre in terms of detail. This is because, if I ever wanted to actually print the file, I would have to compress the number of vertices to the fraction of the amount it was created in. The simple solution to this was to have a different dataset which had been pre-processed to decrease its size to the point it was feasible for me to generate a mesh for the entire planet in one go!
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/21-07-25/world_mesh.png" alt="World Mesh"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        Going from one extreme to the next, I was inspired by Mark Elvers's week notes to try and generate some highly detailed meshes for cities. Using the Department of Environment LIDAR DSM data, I was able to automatically generate a scale model of parts of Central London just by adding the data to my code. My goal for next week is to 3D print some of these city-meshes and see just how much detail the department printers can get out of them!
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/21-07-25/london_mesh.png" alt="London Mesh"&gt;
+      &lt;/figure&gt;</content>
+  </entry>
+  <entry>
+    <title>First terrain prints</title>
+    <link href="https://finleystirk.github.io/weeknotes/14-07-25.html"/>
+    <id>https://finleystirk.github.io/weeknotes/14-07-25.html</id>
+    <updated>2025-07-14T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;
+        Second week into my project and I think that things are coming along nicely. I started off the week by taking a trip with Michael to the Cambridge Makespace where he showed me around the various pieces of equipment and explained some useful bits of information on 3D printing. He also helped me do my first 3D print of a model I had made in the week prior. It was a little rough around the edges but it was a good start and it was nice to having something I could physically hold and interact with.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/14-07-25/first_print.png" alt="first 3D print"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        My goal for this week was to have my code capable of taking any arbitrarily sized and shaped area of the globe and turning that into a 3D print file. To start, I had to move beyond my one file system and start stitching together many different files together in order to capture larger regions than what I was capable of creating before. To help with this I started using the FABDEM data which changed the precision of the data from 90m to 30m which made a noticeable improvement. The other advantange of this data is that it gave me access to elevation information anywhere* on the planet. For example this is a combination of 3 tiles which form part of the Himalayas.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/14-07-25/himalayas.png" alt="3 tile Himalayas"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        This was a big step forward but it was becoming a real headache to manually download the specific files everytime I wanted to generate a new piece of terrain (not to mention my laptop's many complaints about running out of storage). So my next goal was to allow the code to access the entire 300Gb of elevation data without any intervention from myself. With this milestone achieved I could create a 3D print of any part of the earth no matter how large!
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/14-07-25/server_files.png" alt="server files"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        Squares and rectangles were starting to feel a bit dull after creating many of these models so I wanted to end off the week by allowing someone to create a 3D print of terrain for any arbitrary polygon. Sadly for me, this meant revisiting many pieces of old code to support what I thought would be a relatively simple change. I ran into many awkward artifacts and I'm sure even with my current code there are many nasty bugs and edge cases just around the corner like the one seen below.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/14-07-25/broken_tesselation.png" alt="broken tesselation"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        Nearing the end of the week I had got this feature finished, but I am still looking to improve my code to deal with all shapes no matter how awkward they may be. The current workflow begins with QGIS, an open-source tool for visualising geospatial data, to select the area of the Earth you want to print. This selection is then exported into my program, which automatically generates a ready to print 3mf file. Using this process, I was able to create a model of Mount Everest in under two minutes which I could then leave to be printed.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/14-07-25/everest_model.png" alt="mount everest print"&gt;
+      &lt;/figure&gt;</content>
+  </entry>
+  <entry>
+    <title>Starting my UROP</title>
+    <link href="https://finleystirk.github.io/weeknotes/07-07-25.html"/>
+    <id>https://finleystirk.github.io/weeknotes/07-07-25.html</id>
+    <updated>2025-07-07T00:00:00Z</updated>
+    <content type="html">&lt;p&gt;
+        This week I started my project of 3D printing the planet under the supervision of Dr Michael Winston Dales. My aim for this week was to get a prototype up and running which took terrain data in the form of GeoTIFF, and outputs a 3D printable file. I started off slowly getting to grips with the various data sets and the basics of 3D printing (having never actually 3D printed something before). My first step to understanding what was actually going on with the data was to generate some simple 2D images, where the colour of each pixel corresponded to its height.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/07-07-25/hm_rep.png" alt="2D height map representation"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        With a better understanding of what I was even looking at, I started writing some code to tesselate the different height values with triangles to get a mesh I could then import into Bambu Studio using the lib3mf library. However, when I tested the generated files, I was met with an error message complaining that my mesh was riddled with non-manifold edges.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/07-07-25/surface.png" alt="Surface with non-manifold edges"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        I assumed from this that the problem was the lack of an enclosed volume, as at the time I was only generating the surface of the terrain. To fix this, I went back to my code to construct the sides and base for my surface to sit atop. Sadly, loading this new volume into the editor I was met with the same error message, this time with even more of these pesky non-manifold edges! After some research I learned that the problem was with the way that the normals to the triangles are implicitly defined through the ordering of its vertices. After loading it into Blender this problem became obvious as it showed all the normals pointing inwards.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/07-07-25/failed_normals.png" alt="Broken normals"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        After finally fixing this problem by rewinding the triangles, the first prototype was up and running and I had a correctly formatted 3D printable file. The next thing I wanted to do was to add some water to my terrain to showcase the various rivers and lakes. As the Bambu Labs printers support multiple colours I thought it would be nice to utilise that for differentiating the water from the land. However, the problem with this is that Bambu Studio only accepts colour information from native files. I spent a long time trying to understand their system for colouring and how I could replicate it. In the end the solution was simpler but slightly messier than I initially thought. I had to scrap the lib3mf library and write my own code which directly modifies a preexisting file and reconstructs it in a way which tricks Bambu Studio into believing it is an unmodified native file. This allowed me to get my first coloured pieces of terrain.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/07-07-25/coloured_terrain.png" alt="Coloured terrain"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        This was a great improvement, however I was now faced with the problem of how to actually differentiate between land and water. I am still struggling with this problem as currently my naive approach of having a set height, for which everything below is considered water, is creating highly inaccurate representations of the terrain. Hopefully there is a dataset of rivers and lakes out there which I can use but for now I will have to stick with my current approach.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/07-07-25/terrain.png" alt="Terrain"&gt;
+      &lt;/figure&gt;</content>
+  </entry>
+</feed>

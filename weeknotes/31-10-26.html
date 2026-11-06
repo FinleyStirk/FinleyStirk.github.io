@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finley - Weeknote 31/10/26</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
+</head>
+<body class="weeknote-page">
+  <!-- Site navigation: a thin bar fixed to the top of the window (same as every other page). No item is marked active on a single note. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
+  </nav>
+
+  <main class="post-container">
+
+    <header class="post-header">
+      <h1>Weeknotes: 31st October 2026</h1>
+    </header>
+
+    <article class="post-content">
+      <h2>Dissertation Progress</h2>
+
+      <p>
+        After realising that, even if I deleted every file off my laptop, I still wouldn't be able to store the Tessera embeddings for the UK, I've decided to focus on a smaller area of analysis. The area I've chosen is the <a href="https://en.wikipedia.org/wiki/New_Forest" target="_blank" rel="noopener noreferrer">New Forest</a>. I first chose this area for its abundance of GBIF data (almost 6 million with position and uncertainty) and the fact it is a national park.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/31-10-26/uncertainty_maps.png" alt="new_forest_records">
+      </figure>
+
+      <p>
+        I had a quick scare in my weekly meeting with <a href="https://digitalflapjack.com/" target="_blank" rel="noopener noreferrer">Michael</a> as he very reasonably asked me if the New Forest would be a problem due to it being a massive forest, and thus lacking in habitat diversity... However luckily for me I went to check this with the habitat map he kindly provided and I saw that there is plenty of diversity in habitat types for this to be a valid area of investigation!
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/31-10-26/habitat_map.png" alt="new_forest_habitats">
+      </figure>
+
+      <p>
+        However with a new area of investigation I had to take a step back and do a similar evaluation to the one I did for Madagascar where I analysed the potential different causes for the uncertainty in the GBIF data. Firstly I found that the number of obscured datapoints was much lower (as you would expect compared to Madagascar due to fewer endangered species). In addition I found another source of systematic error in the data that wasn't present in Madagascar. After doing some investigation I plotted the coordinates of some of the most common uncertainty values and was surprised when I saw the following map.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/31-10-26/grid_uncertainties.png" alt="grid_uncertainties">
+      </figure>
+
+      <p>
+        What I was seeing here turned out to be a common practice in a lot of UK datasets such as the <a href="https://ukbms.org/" target="_blank" rel="noopener noreferrer">UK Butterfly Monitoring Scheme (UKBMS)</a> where records have their position and uncertainty based on <a href="https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid" target="_blank" rel="noopener noreferrer">OS grid squares</a>. This explained the various spikes at different uncertainty values, as their uncertainty was registered as the diagonal length of the square, which varied depending on what resolution the OS grid was set to.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/31-10-26/mechanism_breakdown.png" alt="mechanism_breakdown">
+      </figure>
+
+      <p>
+        As you can see the data is absolutely dominated by these grid squares with massive uncertainty, which is something I'm going to have to consider the significance of later, but for now I am not too concerned as even without them there are plenty of datapoints for me to use!
+      </p>
+
+      <h2>Weeknotes Progress</h2>
+
+      <p>
+        Unfortunately I have already fallen a bit behind with weeknotes (these should have come out 5 days ago). However, I thought it would be better late than never to upload them so here they are for last week. I should be back on track very soon as I've got plenty of work done and I just need to write it down, so my next weeknotes should be out in a few days. In addition I've finally got round to setting up an <a href="/weeknotes/feed.xml">Atom feed</a> for my weeknotes!
+      </p>
+    </article>
+
+  </main>
+
+  <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+</body>
+</html>
