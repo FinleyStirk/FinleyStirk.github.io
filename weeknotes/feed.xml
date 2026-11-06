@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
   <title>Finley Stirk's Weeknotes</title>
+  <subtitle>Weekly notes on my Part II dissertation: Habitat maps from noisy GBIF data and Tessera embeddings</subtitle>
+  <icon>https://finleystirk.github.io/static/media/site/favicon_f.png</icon>
   <link href="https://finleystirk.github.io/weeknotes/"/>
   <link rel="self" href="https://finleystirk.github.io/weeknotes/feed.xml"/>
   <id>https://finleystirk.github.io/weeknotes/</id>
@@ -11,6 +13,8 @@
     <link href="https://finleystirk.github.io/weeknotes/31-10-26.html"/>
     <id>https://finleystirk.github.io/weeknotes/31-10-26.html</id>
     <updated>2026-10-31T00:00:00Z</updated>
+    <summary>Switching my study area to the New Forest, and finding UK records snapped to OS grid squares.</summary>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/31-10-26/habitat_map.png"/>
     <content type="html">&lt;h2&gt;Dissertation Progress&lt;/h2&gt;
 
       &lt;p&gt;
@@ -60,6 +64,8 @@
     <link href="https://finleystirk.github.io/weeknotes/24-10-26.html"/>
     <id>https://finleystirk.github.io/weeknotes/24-10-26.html</id>
     <updated>2026-10-24T00:00:00Z</updated>
+    <summary>Starting my dissertation on habitat maps from noisy GBIF data, and a first look at Madagascar's records and their uncertainty.</summary>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/24-10-26/madagascar_uncertainty.png"/>
     <content type="html">&lt;h2&gt;Dissertation Outline&lt;/h2&gt;
 
       &lt;p&gt;
@@ -111,6 +117,7 @@
     <link href="https://finleystirk.github.io/weeknotes/05-09-25.html"/>
     <id>https://finleystirk.github.io/weeknotes/05-09-25.html</id>
     <updated>2025-09-05T00:00:00Z</updated>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/05-09-25/mount_rinjani.png"/>
     <content type="html">&lt;p&gt;
         This was my last week working on topogmesh and I wanted to conclude my weeknotes with an overview of the project itself and some things someone who is interested could do with the code. Topogmesh now supports the use of OSM data for any Raster on earth to add colours and details to terrain models which fixes my problem from weeks ago about accurate data for rivers and other natural sources of water. This can also be applied to any of the other features within the OSM database (such as forests) which has allowed for this print of the Crater Lake within &lt;a href="https://en.wikipedia.org/wiki/Mount_Rinjani" target="_blank" rel="noopener noreferrer"&gt;Mount Rinjani&lt;/a&gt;.
       &lt;/p&gt;
@@ -157,6 +164,7 @@
     <link href="https://finleystirk.github.io/weeknotes/03-08-25.html"/>
     <id>https://finleystirk.github.io/weeknotes/03-08-25.html</id>
     <updated>2025-08-03T00:00:00Z</updated>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/03-08-25/tree_noise.png"/>
     <content type="html">&lt;p&gt;
         These last two weeks I've finally managed to get some code uploaded on PyPI and available for anyone to download and try out. If you do want to try it out, you can find out more information on the &lt;a href="https://github.com/quantifyearth/topogmesh" target="_blank" rel="noopener noreferrer"&gt;github page&lt;/a&gt;. If you run into any problems with the code feel free to add an issue to the github page and I will try to address it as soon as I possibly can. As this is just the first release I've tried to make it reasonably stable and only include the core functionalities of generating terrain for either entire .tif files or for a particular area specified by a .geojson file. In the future I plan on incorporating my more recent code so keep an ear out if you are interested in this project!
       &lt;/p&gt;
@@ -198,6 +206,7 @@
     <link href="https://finleystirk.github.io/weeknotes/21-07-25.html"/>
     <id>https://finleystirk.github.io/weeknotes/21-07-25.html</id>
     <updated>2025-07-21T00:00:00Z</updated>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/21-07-25/printed_everest.png"/>
     <content type="html">&lt;p&gt;
         I started off this week with my first print on the department 3D printers. Michael and I wanted to see how the files from the previous week would look when physically printed, so we tested it on a highly scaled down version of Mount Everest. This is what the result looked like after about 40 minutes of printing followed by a quick cleanup of the various wispy tendrils. I am overall very happy with how it looks; however, I think it will look even better and more detailed when we start doing larger prints in the future.
       &lt;/p&gt;
@@ -235,6 +244,7 @@
     <link href="https://finleystirk.github.io/weeknotes/14-07-25.html"/>
     <id>https://finleystirk.github.io/weeknotes/14-07-25.html</id>
     <updated>2025-07-14T00:00:00Z</updated>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/14-07-25/first_print.png"/>
     <content type="html">&lt;p&gt;
         Second week into my project and I think that things are coming along nicely. I started off the week by taking a trip with Michael to the Cambridge Makespace where he showed me around the various pieces of equipment and explained some useful bits of information on 3D printing. He also helped me do my first 3D print of a model I had made in the week prior. It was a little rough around the edges but it was a good start and it was nice to having something I could physically hold and interact with.
       &lt;/p&gt;
@@ -280,6 +290,7 @@
     <link href="https://finleystirk.github.io/weeknotes/07-07-25.html"/>
     <id>https://finleystirk.github.io/weeknotes/07-07-25.html</id>
     <updated>2025-07-07T00:00:00Z</updated>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/07-07-25/hm_rep.png"/>
     <content type="html">&lt;p&gt;
         This week I started my project of 3D printing the planet under the supervision of Dr Michael Winston Dales. My aim for this week was to get a prototype up and running which took terrain data in the form of GeoTIFF, and outputs a 3D printable file. I started off slowly getting to grips with the various data sets and the basics of 3D printing (having never actually 3D printed something before). My first step to understanding what was actually going on with the data was to generate some simple 2D images, where the colour of each pixel corresponded to its height.
       &lt;/p&gt;
