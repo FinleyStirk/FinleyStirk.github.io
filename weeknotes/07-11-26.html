@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finley - Weeknote 07/11/26</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
+</head>
+<body class="weeknote-page">
+  <!-- Site navigation: a thin bar fixed to the top of the window (same as every other page). No item is marked active on a single note. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
+  </nav>
+
+  <main class="post-container">
+
+    <header class="post-header">
+      <h1>Weeknotes: 7th November 2026</h1>
+    </header>
+
+    <article class="post-content">
+      <h2>Modelling the Uncertainty</h2>
+
+      <p>
+        The next step of my project is to fit a distribution to my GBIF data to allow me to sample an arbitrary number of occurrences. I considered skipping this step and just sampling directly from the empirical distribution; however, I've decided that sampling from a model will give me the flexibility to see how different models degrade/scale with the noisiness and density of the data.
+      </p>
+
+      <p>
+        To start, I took my categorisations of the different sources of uncertainty (GPS, grid squares and obscured) and separated out the data so I could model each of them independently. For the OS grid square and iNaturalist obscured uncertainties, the model is a standard discrete distribution. For the GPS uncertainties I've decided to model them as a <a href="https://en.wikipedia.org/wiki/Mixture_model#Gaussian_mixture_model" target="_blank" rel="noopener noreferrer">Gaussian mixture model</a>, as I think each device has roughly normally distributed error, with its own spread, so the overall GPS error is a mix of several Gaussians. These are fitted on log10 radii as the uncertainty spans multiple orders of magnitude. To find the right number of components I fit models with different numbers of components and calculated their <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" target="_blank" rel="noopener noreferrer">BIC scores</a>, which balance accuracy against complexity. However, I found that the score kept improving the more components I added.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/07-11-26/bad_bic_scores.png" alt="bad_bic_scores">
+      </figure>
+
+      <p>
+        I immediately thought that this was a statistical modelling problem rather than a genuine feature of the data. My best guess for why this happens is that due to how a lot of the uncertainty points have been discretised, the GMM can get arbitrarily better by placing a component on one of the spikes and shrinking its standard deviation. The solution to this problem was to add a small amount of artificial noise to the data to spread each value back over the range it was probably rounded from (I'm assuming to the nearest metre), smoothing out the spikes. After doing this I rechecked how BIC scores varied with the number of components.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/07-11-26/better_bic_scores.png" alt="better_bic_scores">
+      </figure>
+
+      <p>
+        From this plot I deemed 3 to be the elbow and settled on that as the number of components in my model. I then tested this by sampling from the models for each mechanism and checking them against the empirical distribution, and I'm happy with how they turned out.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/07-11-26/synthetic_comparison.png" alt="synthetic_comparison">
+      </figure>
+
+      <h2>Reading Corner: Dark Forest and Death's End</h2>
+
+      <p>
+        I've greatly enjoyed the Remembrance of Earth's Past series and it's reaffirmed my desire to read more science fiction this year. I had a fair few problems with it, which I've failed twice now to articulate concisely. Every time I sit down to write about my grievances, they spiral into vast essays that I'm self-aware enough to know no one wants to read. But if for some reason you are eager to hear my thoughts, feel free to bring it up with me in person and I'll tell you what I think about the character writing and what I saw as a pervasive undercurrent of misogyny in the series.
+      </p>
+    </article>
+
+  </main>
+
+  <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+</body>
+</html>
