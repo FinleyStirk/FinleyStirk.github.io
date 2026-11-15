@@ -6,8 +6,69 @@
   <link href="https://finleystirk.github.io/weeknotes/"/>
   <link rel="self" href="https://finleystirk.github.io/weeknotes/feed.xml"/>
   <id>https://finleystirk.github.io/weeknotes/</id>
-  <updated>2026-11-07T00:00:00Z</updated>
+  <updated>2026-11-15T00:00:00Z</updated>
   <author><name>Finley Stirk</name></author>
+  <entry>
+    <title>Comparing Naive, Filtered and Omniscient Training</title>
+    <link href="https://finleystirk.github.io/weeknotes/15-11-26.html"/>
+    <id>https://finleystirk.github.io/weeknotes/15-11-26.html</id>
+    <updated>2026-11-15T00:00:00Z</updated>
+    <summary>Comparing naive, omniscient and filtered training on synthetic New Forest data.</summary>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/15-11-26/naive_omniscient_maps.png"/>
+    <content type="html">&lt;p&gt;
+        I'm working ahead of schedule, as this week I've completed the following:
+      &lt;/p&gt;
+
+      &lt;ul&gt;
+        &lt;li&gt;Written the evaluation code: &lt;a href="https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29" target="_blank" rel="noopener noreferrer"&gt;spatial cross-validation&lt;/a&gt;, accuracy and &lt;a href="https://en.wikipedia.org/wiki/F-score" target="_blank" rel="noopener noreferrer"&gt;macro F1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;Built the data pipeline for Tessera embeddings and habitat labels&lt;/li&gt;
+        &lt;li&gt;Trained a model for the simple training methods: naive, omniscient and filtered.&lt;/li&gt;
+      &lt;/ul&gt;
+
+      &lt;p&gt;
+        For context, the omniscient model refers to the best a model could realistically achieve as it is trained on the synthetic points' 'true' positions (i.e. before any noise is added to the data). This means it serves as a reasonable upper bound on how well the other models recover the map from the uncertainty. The naive method treats the points (now with uncertainties added) as if they are 100% accurate labels for the pixel they are in; this method is the baseline benchmark for future noise-aware models.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        However, before I get into all of that, here's a brief section on how representative the New Forest is of the wider iNaturalist data. This was a point raised by &lt;a href="https://digitalflapjack.com/" target="_blank" rel="noopener noreferrer"&gt;Michael&lt;/a&gt; and &lt;a href="https://www.aneeshnaik.com/" target="_blank" rel="noopener noreferrer"&gt;Aneesh&lt;/a&gt; in our last meeting and I thought it was worth covering. From what I can tell, within the UK the uncertainty distributions are largely self-similar, whereas for Madagascar there is a notable difference.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/15-11-26/transferability.png" alt="transferability"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The median radius in Madagascar is 33 m compared to the New Forest's 16 m, which shows that the data is far noisier on average. As the underlying distribution of the noise will disproportionately affect different training techniques, I'll make sure in future to vary the parameters to simulate how the model transfers to different parts of the world.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        After implementing the data pipeline for Tessera embeddings and habitat labels, I trained a &lt;a href="https://en.wikipedia.org/wiki/Logistic_regression" target="_blank" rel="noopener noreferrer"&gt;logistic regression&lt;/a&gt; model on both the naive and omniscient data and compared the two using 500 synthetic records.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/15-11-26/training_scores.png" alt="training_scores"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The thing which immediately struck me was how small the gap was between the two methods. When considering that these act as the upper and lower bounds of the future models, it does leave me a little bit concerned that there is potentially not a great deal of improvement to be made. Looking at the maps (because it's always fun to look at maps), at a cursory glance the two appear very similar.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/15-11-26/naive_omniscient_maps.png" alt="naive_omniscient_maps"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        The next point of investigation is to look at the method that a lot of researchers use, which is to simply filter the data to only include the points with very low uncertainty to improve the quality of the labels. To see how well this technique performed, I trained the model for different radius thresholds (where each threshold marked the maximum uncertainty the points could have). Plotting their accuracy and macro F1 scores gave the following graph.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;img src="https://finleystirk.github.io/static/media/weeknotes/15-11-26/filtering_scores.png" alt="filtering_scores"&gt;
+      &lt;/figure&gt;
+
+      &lt;p&gt;
+        Filtering achieved its best macro F1 score at a threshold of around 50 m, where it was about 1% below the omniscient ceiling. The small gap this leaves for improvement from &lt;a href="https://en.wikipedia.org/wiki/Multiple_instance_learning" target="_blank" rel="noopener noreferrer"&gt;Multiple Instance Learning&lt;/a&gt; leads me to believe that the area of focus should be shifted onto dealing with sparser and noisier data. While I think it is fine for me to continue evaluating the New Forest with this data, as I can artificially degrade the data to see how each technique will scale, when it comes to a practical application, another region (such as Madagascar) might yield more significant results.
+      &lt;/p&gt;</content>
+  </entry>
   <entry>
     <title>New Forest Modelling and Dark Forest Deterrence</title>
     <link href="https://finleystirk.github.io/weeknotes/07-11-26.html"/>

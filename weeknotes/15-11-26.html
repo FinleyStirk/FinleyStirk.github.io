@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finley - Weeknote 15/11/26</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
+</head>
+<body class="weeknote-page">
+  <!-- Site navigation: a thin bar fixed to the top of the window (same as every other page). No item is marked active on a single note. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
+  </nav>
+
+  <main class="post-container">
+
+    <header class="post-header">
+      <h1>Weeknotes: 15th November 2026</h1>
+    </header>
+
+    <article class="post-content">
+      <p>
+        I'm working ahead of schedule, as this week I've completed the following:
+      </p>
+
+      <ul>
+        <li>Written the evaluation code: <a href="https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29" target="_blank" rel="noopener noreferrer">spatial cross-validation</a>, accuracy and <a href="https://en.wikipedia.org/wiki/F-score" target="_blank" rel="noopener noreferrer">macro F1</a></li>
+        <li>Built the data pipeline for Tessera embeddings and habitat labels</li>
+        <li>Trained a model for the simple training methods: naive, omniscient and filtered.</li>
+      </ul>
+
+      <p>
+        For context, the omniscient model refers to the best a model could realistically achieve as it is trained on the synthetic points' 'true' positions (i.e. before any noise is added to the data). This means it serves as a reasonable upper bound on how well the other models recover the map from the uncertainty. The naive method treats the points (now with uncertainties added) as if they are 100% accurate labels for the pixel they are in; this method is the baseline benchmark for future noise-aware models.
+      </p>
+
+      <p>
+        However, before I get into all of that, here's a brief section on how representative the New Forest is of the wider iNaturalist data. This was a point raised by <a href="https://digitalflapjack.com/" target="_blank" rel="noopener noreferrer">Michael</a> and <a href="https://www.aneeshnaik.com/" target="_blank" rel="noopener noreferrer">Aneesh</a> in our last meeting and I thought it was worth covering. From what I can tell, within the UK the uncertainty distributions are largely self-similar, whereas for Madagascar there is a notable difference.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/15-11-26/transferability.png" alt="transferability">
+      </figure>
+
+      <p>
+        The median radius in Madagascar is 33 m compared to the New Forest's 16 m, which shows that the data is far noisier on average. As the underlying distribution of the noise will disproportionately affect different training techniques, I'll make sure in future to vary the parameters to simulate how the model transfers to different parts of the world.
+      </p>
+
+      <p>
+        After implementing the data pipeline for Tessera embeddings and habitat labels, I trained a <a href="https://en.wikipedia.org/wiki/Logistic_regression" target="_blank" rel="noopener noreferrer">logistic regression</a> model on both the naive and omniscient data and compared the two using 500 synthetic records.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/15-11-26/training_scores.png" alt="training_scores">
+      </figure>
+
+      <p>
+        The thing which immediately struck me was how small the gap was between the two methods. When considering that these act as the upper and lower bounds of the future models, it does leave me a little bit concerned that there is potentially not a great deal of improvement to be made. Looking at the maps (because it's always fun to look at maps), at a cursory glance the two appear very similar.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/15-11-26/naive_omniscient_maps.png" alt="naive_omniscient_maps">
+      </figure>
+
+      <p>
+        The next point of investigation is to look at the method that a lot of researchers use, which is to simply filter the data to only include the points with very low uncertainty to improve the quality of the labels. To see how well this technique performed, I trained the model for different radius thresholds (where each threshold marked the maximum uncertainty the points could have). Plotting their accuracy and macro F1 scores gave the following graph.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <img src="/static/media/weeknotes/15-11-26/filtering_scores.png" alt="filtering_scores">
+      </figure>
+
+      <p>
+        Filtering achieved its best macro F1 score at a threshold of around 50 m, where it was about 1% below the omniscient ceiling. The small gap this leaves for improvement from <a href="https://en.wikipedia.org/wiki/Multiple_instance_learning" target="_blank" rel="noopener noreferrer">Multiple Instance Learning</a> leads me to believe that the area of focus should be shifted onto dealing with sparser and noisier data. While I think it is fine for me to continue evaluating the New Forest with this data, as I can artificially degrade the data to see how each technique will scale, when it comes to a practical application, another region (such as Madagascar) might yield more significant results.
+      </p>
+    </article>
+
+  </main>
+
+  <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+</body>
+</html>
