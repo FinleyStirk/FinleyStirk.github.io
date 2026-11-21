@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finley - Weeknote 19/11/26</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=51" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/media/site/favicon_f.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.querySelector('.post-content'), {
+      delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+      macros: {'\\argmax': '\\operatorname*{argmax}'},
+      throwOnError: false
+    })"></script>
+  <style>.katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }</style>
+</head>
+<body class="weeknote-page">
+  <!-- Site navigation: a thin bar fixed to the top of the window (same as every other page). No item is marked active on a single note. -->
+  <nav class="site-nav" aria-label="Main">
+    <a class="site-nav-name" href="/">Finley Stirk</a>
+    <a href="/">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/weeknotes/">Weeknotes</a>
+  </nav>
+
+  <main class="post-container">
+
+    <header class="post-header">
+      <h1>Weeknotes: 19th November 2026</h1>
+    </header>
+
+    <article class="post-content">
+      <p>
+        No actual code this week as I was mainly reading through various materials on <a href="https://en.wikipedia.org/wiki/Multiple_instance_learning" target="_blank" rel="noopener noreferrer">multiple instance learning</a> and coming up with an appropriate method for the problem. Right now the solution I've settled on is to use the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm" target="_blank" rel="noopener noreferrer">expectation-maximisation (EM) algorithm</a>. The reason I feel like this fits the problem, is that there are two interdependent unknown variables, the true position of the point and the underlying habitat labels in each bag. In addition the output is both the habitat classifier as well as probability distribution about the predicted true location of occurrence.
+      </p>
+
+      <p>
+        To go into more detail about how I will implement this I'll use the following notation.
+      </p>
+
+      <p>
+        $\pi_{bi}$ - the prior probability that the point associated with bag $b$ is actually from pixel $i$
+      </p>
+
+      <p>
+        $A_i$ - The square region of pixel $i$
+      </p>
+
+      <p>
+        $A_b$ - The region of uncertainty of bag $b$
+      </p>
+
+      <p>
+        $B_b$ - The set of pixels in bag $b$ (those overlapping $A_b$)
+      </p>
+
+      <p>
+        $x_i$ - Tessera embedding at pixel $i$
+      </p>
+
+      <p>
+        $\theta^{(t)}$ - Classifier parameters at iteration $t$
+      </p>
+
+      <p>
+        $\alpha_{bi}^{(t)}$ - Weight of pixel $i$ from bag $b$ at iteration $t$ / Predicted probability after $t$ iterations of true point from bag $b$ being in pixel $i$
+      </p>
+
+      <p>
+        $y_b$ - Label of bag $b$
+      </p>
+
+      <p>
+        First the weight of the point is uniformly distributed over all the pixels in its uncertainty area. This reflects the prior belief that the point is equally likely to come from anywhere in the region (This can easily be substituted with a different distribution such as Gaussian depending on what I think the underlying distribution of GPS error actually is). It also takes into consideration the geometry of the pixels, so pixels which only partially lie within the uncertainty region are weighted less.
+      </p>
+
+      <div class="math-block">
+        $$ \pi_{bi} = \frac{|A_i \cap A_b|}{|A_b|} $$
+      </div>
+
+      <p>
+        Initially the weight of the pixel in each bag is set to the prior probability.
+      </p>
+
+      <div class="math-block">
+        $$ \alpha_{bi}^{(0)} = \pi_{bi} $$
+      </div>
+
+      <p>
+        The next step is to train a <a href="https://en.wikipedia.org/wiki/Logistic_regression" target="_blank" rel="noopener noreferrer">logistic regression</a> model based on minimising the weighted <a href="https://en.wikipedia.org/wiki/Cross-entropy" target="_blank" rel="noopener noreferrer">cross-entropy</a> of the probability that a pixel's predicted label is the same as the label of the bag given the pixel's embedding.
+      </p>
+
+      <div class="math-block">
+        $$ \theta^{(t)} =  \operatorname*{argmin}_\theta \left( - \sum_b \sum_{i \in B_b} \alpha_{bi}^{(t)} \log P_\theta (y = y_b | x_i) \right) $$
+      </div>
+
+      <p>
+        This classifier can then be used to recalculate the probabilities that each pixel's true label matches the label of the bag.
+      </p>
+
+      <div class="math-block">
+        $$ p_{bi}^{(t)} = P_{\theta^{(t)}}(y = y_b | x_i) $$
+      </div>
+
+      <p>
+        This represents the main loop of the algorithm as you can see the improved weights will improve the model and the improved model creates better weights. However, using $p_{bi}^{(t)}$ directly for $\alpha_{bi}^{(t+1)}$ can lead to the total weight of a bag exceeding 1 and will overweight larger bags. In addition it breaks the interpretation that $\alpha_{bi}^{(t)}$ is the probability that the bag's true location is within pixel $A_i$. Therefore, every pixel will be normalised within each bag, as well as being scaled by the prior to keep the geometric weighting accurate.
+      </p>
+
+      <div class="math-block">
+        $$ \alpha_{bi}^{(t+1)} = \frac{\pi_{bi}\, p_{bi}^{(t)}}{\sum_{j \in B_b} \pi_{bj}\, p_{bj}^{(t)}} $$
+      </div>
+
+      <p>
+        Now with the normalised weights the algorithm can be iterated on to refine the classifier and the weights. How many iterations of EM is something I will have to assess and look into more later as the more iterations I perform the danger of overfitting increases.
+      </p>
+
+      <p>
+        After working through the mathematics of the algorithm I realised this would be a good place for me to make use of a side project I've been working on which uses LLMs to write procedural code for animation. So as an AI disclaimer, the animation below, while iterated on and prompted in great detail by myself, was entirely procedurally generated with an LLM. I know that a lot of people object to any AI generated resources, however I believe that it can be used to greatly benefit scientific communication when used correctly, and I think the video below does a good job of visualising the algorithm.
+      </p>
+
+      <figure class="post-image post-image--wide">
+        <video src="/static/media/weeknotes/19-11-26/MILProcess.mp4" poster="/static/media/weeknotes/19-11-26/MILProcess_poster.webp" controls playsinline preload="metadata" aria-label="Animation of the EM algorithm refining the pixel weights and classifier"></video>
+      </figure>
+    </article>
+
+  </main>
+
+  <script src="/static/js/cursor-glow.js?v=5" defer></script>
+  <script src="/static/js/site-nav.js?v=4" defer></script>
+</body>
+</html>

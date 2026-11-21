@@ -6,8 +6,107 @@
   <link href="https://finleystirk.github.io/weeknotes/"/>
   <link rel="self" href="https://finleystirk.github.io/weeknotes/feed.xml"/>
   <id>https://finleystirk.github.io/weeknotes/</id>
-  <updated>2026-11-15T00:00:00Z</updated>
+  <updated>2026-11-19T00:00:00Z</updated>
   <author><name>Finley Stirk</name></author>
+  <entry>
+    <title>Plans for MIL</title>
+    <link href="https://finleystirk.github.io/weeknotes/19-11-26.html"/>
+    <id>https://finleystirk.github.io/weeknotes/19-11-26.html</id>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <summary>How I plan on using expectation-maximisation to tackle the MIL problem</summary>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/19-11-26/visualisation.png"/>
+    <content type="html">&lt;p&gt;
+        No actual code this week as I was mainly reading through various materials on &lt;a href="https://en.wikipedia.org/wiki/Multiple_instance_learning" target="_blank" rel="noopener noreferrer"&gt;multiple instance learning&lt;/a&gt; and coming up with an appropriate method for the problem. Right now the solution I've settled on is to use the &lt;a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm" target="_blank" rel="noopener noreferrer"&gt;expectation-maximisation (EM) algorithm&lt;/a&gt;. The reason I feel like this fits the problem, is that there are two interdependent unknown variables, the true position of the point and the underlying habitat labels in each bag. In addition the output is both the habitat classifier as well as probability distribution about the predicted true location of occurrence.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        To go into more detail about how I will implement this I'll use the following notation.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $\pi_{bi}$ - the prior probability that the point associated with bag $b$ is actually from pixel $i$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $A_i$ - The square region of pixel $i$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $A_b$ - The region of uncertainty of bag $b$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $B_b$ - The set of pixels in bag $b$ (those overlapping $A_b$)
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $x_i$ - Tessera embedding at pixel $i$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $\theta^{(t)}$ - Classifier parameters at iteration $t$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $\alpha_{bi}^{(t)}$ - Weight of pixel $i$ from bag $b$ at iteration $t$ / Predicted probability after $t$ iterations of true point from bag $b$ being in pixel $i$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        $y_b$ - Label of bag $b$
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        First the weight of the point is uniformly distributed over all the pixels in its uncertainty area. This reflects the prior belief that the point is equally likely to come from anywhere in the region (This can easily be substituted with a different distribution such as Gaussian depending on what I think the underlying distribution of GPS error actually is). It also takes into consideration the geometry of the pixels, so pixels which only partially lie within the uncertainty region are weighted less.
+      &lt;/p&gt;
+
+      &lt;div class="math-block"&gt;
+        $$ \pi_{bi} = \frac{|A_i \cap A_b|}{|A_b|} $$
+      &lt;/div&gt;
+
+      &lt;p&gt;
+        Initially the weight of the pixel in each bag is set to the prior probability.
+      &lt;/p&gt;
+
+      &lt;div class="math-block"&gt;
+        $$ \alpha_{bi}^{(0)} = \pi_{bi} $$
+      &lt;/div&gt;
+
+      &lt;p&gt;
+        The next step is to train a &lt;a href="https://en.wikipedia.org/wiki/Logistic_regression" target="_blank" rel="noopener noreferrer"&gt;logistic regression&lt;/a&gt; model based on minimising the weighted &lt;a href="https://en.wikipedia.org/wiki/Cross-entropy" target="_blank" rel="noopener noreferrer"&gt;cross-entropy&lt;/a&gt; of the probability that a pixel's predicted label is the same as the label of the bag given the pixel's embedding.
+      &lt;/p&gt;
+
+      &lt;div class="math-block"&gt;
+        $$ \theta^{(t)} =  \operatorname*{argmin}_\theta \left( - \sum_b \sum_{i \in B_b} \alpha_{bi}^{(t)} \log P_\theta (y = y_b | x_i) \right) $$
+      &lt;/div&gt;
+
+      &lt;p&gt;
+        This classifier can then be used to recalculate the probabilities that each pixel's true label matches the label of the bag.
+      &lt;/p&gt;
+
+      &lt;div class="math-block"&gt;
+        $$ p_{bi}^{(t)} = P_{\theta^{(t)}}(y = y_b | x_i) $$
+      &lt;/div&gt;
+
+      &lt;p&gt;
+        This represents the main loop of the algorithm as you can see the improved weights will improve the model and the improved model creates better weights. However, using $p_{bi}^{(t)}$ directly for $\alpha_{bi}^{(t+1)}$ can lead to the total weight of a bag exceeding 1 and will overweight larger bags. In addition it breaks the interpretation that $\alpha_{bi}^{(t)}$ is the probability that the bag's true location is within pixel $A_i$. Therefore, every pixel will be normalised within each bag, as well as being scaled by the prior to keep the geometric weighting accurate.
+      &lt;/p&gt;
+
+      &lt;div class="math-block"&gt;
+        $$ \alpha_{bi}^{(t+1)} = \frac{\pi_{bi}\, p_{bi}^{(t)}}{\sum_{j \in B_b} \pi_{bj}\, p_{bj}^{(t)}} $$
+      &lt;/div&gt;
+
+      &lt;p&gt;
+        Now with the normalised weights the algorithm can be iterated on to refine the classifier and the weights. How many iterations of EM is something I will have to assess and look into more later as the more iterations I perform the danger of overfitting increases.
+      &lt;/p&gt;
+
+      &lt;p&gt;
+        After working through the mathematics of the algorithm I realised this would be a good place for me to make use of a side project I've been working on which uses LLMs to write procedural code for animation. So as an AI disclaimer, the animation below, while iterated on and prompted in great detail by myself, was entirely procedurally generated with an LLM. I know that a lot of people object to any AI generated resources, however I believe that it can be used to greatly benefit scientific communication when used correctly, and I think the video below does a good job of visualising the algorithm.
+      &lt;/p&gt;
+
+      &lt;figure class="post-image post-image--wide"&gt;
+        &lt;video src="https://finleystirk.github.io/static/media/weeknotes/19-11-26/MILProcess.mp4" poster="https://finleystirk.github.io/static/media/weeknotes/19-11-26/MILProcess_poster.webp" controls playsinline preload="metadata" aria-label="Animation of the EM algorithm refining the pixel weights and classifier"&gt;&lt;/video&gt;
+      &lt;/figure&gt;</content>
+  </entry>
   <entry>
     <title>Comparing Naive, Filtered and Omniscient Training</title>
     <link href="https://finleystirk.github.io/weeknotes/15-11-26.html"/>

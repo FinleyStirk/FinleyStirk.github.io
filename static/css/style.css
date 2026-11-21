@@ -636,6 +636,25 @@ a.project-card-tag--gold:hover {
   border: 1px solid var(--border);
 }
 
+/* Weeknotes only: media is much wider than the text. "narrow" images fill the text column, and
+   wide ones break out of it to 960px, centred on the column (the negative margin pulls them out
+   equally on both sides), keeping a 16px gutter on narrow screens. Projects pages are unchanged. */
+.weeknote-page .post-image {
+  max-width: none;
+}
+
+.weeknote-page .post-image--wide {
+  --media-width: min(960px, calc(100vw - 32px));
+  width: var(--media-width);
+  margin-left: calc((100% - var(--media-width)) / 2);
+  margin-right: 0;
+}
+
+.weeknote-page .post-image img,
+.weeknote-page .post-image video {
+  width: 100%;
+}
+
 /* --- Blog Page Styles --- */
 
 .blog-container {
