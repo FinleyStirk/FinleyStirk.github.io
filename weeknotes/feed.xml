@@ -6,15 +6,15 @@
   <link href="https://finleystirk.github.io/weeknotes/"/>
   <link rel="self" href="https://finleystirk.github.io/weeknotes/feed.xml"/>
   <id>https://finleystirk.github.io/weeknotes/</id>
-  <updated>2026-11-19T00:00:00Z</updated>
+  <updated>2026-11-22T00:00:00Z</updated>
   <author><name>Finley Stirk</name></author>
   <entry>
     <title>Plans for MIL</title>
-    <link href="https://finleystirk.github.io/weeknotes/19-11-26.html"/>
+    <link href="https://finleystirk.github.io/weeknotes/22-11-26.html"/>
     <id>https://finleystirk.github.io/weeknotes/19-11-26.html</id>
-    <updated>2026-11-19T00:00:00Z</updated>
+    <updated>2026-11-22T00:00:00Z</updated>
     <summary>How I plan on using expectation-maximisation to tackle the MIL problem</summary>
-    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/19-11-26/visualisation.png"/>
+    <media:thumbnail url="https://finleystirk.github.io/static/media/weeknotes/22-11-26/visualisation.png"/>
     <content type="html">&lt;p&gt;
         No actual code this week as I was mainly reading through various materials on &lt;a href="https://en.wikipedia.org/wiki/Multiple_instance_learning" target="_blank" rel="noopener noreferrer"&gt;multiple instance learning&lt;/a&gt; and coming up with an appropriate method for the problem. Right now the solution I've settled on is to use the &lt;a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm" target="_blank" rel="noopener noreferrer"&gt;expectation-maximisation (EM) algorithm&lt;/a&gt;. The reason I feel like this fits the problem, is that there are two interdependent unknown variables, the true position of the point and the underlying habitat labels in each bag. In addition the output is both the habitat classifier as well as probability distribution about the predicted true location of occurrence.
       &lt;/p&gt;
@@ -104,7 +104,7 @@
       &lt;/p&gt;
 
       &lt;figure class="post-image post-image--wide"&gt;
-        &lt;video src="https://finleystirk.github.io/static/media/weeknotes/19-11-26/MILProcess.mp4" poster="https://finleystirk.github.io/static/media/weeknotes/19-11-26/MILProcess_poster.webp" controls playsinline preload="metadata" aria-label="Animation of the EM algorithm refining the pixel weights and classifier"&gt;&lt;/video&gt;
+        &lt;video src="https://finleystirk.github.io/static/media/weeknotes/22-11-26/MILProcess.mp4" poster="https://finleystirk.github.io/static/media/weeknotes/22-11-26/MILProcess_poster.webp" controls playsinline preload="metadata" aria-label="Animation of the EM algorithm refining the pixel weights and classifier"&gt;&lt;/video&gt;
       &lt;/figure&gt;</content>
   </entry>
   <entry>
